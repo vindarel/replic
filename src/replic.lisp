@@ -1,8 +1,9 @@
 (defpackage replic
   (:use :cl)
   (:export :main
-           :hello
            :help
+           :goodbye
+           :hello
            :echo))
 (in-package :replic)
 
@@ -10,28 +11,55 @@
 (defparameter *verbs* '()
   "List of commands for the REPL.")
 
+(defparameter *args-completions* '()
+  "Alist that associates a command name (verb) to:
+
+  1) either a list of strings,
+
+  2) either a function returning the completion candidates. This
+  function takes the partially entered argument as argument.
+
+  Example usage:
+
+  (push '(\"goodbye\" . *names*) *args-completions*)
+
+  ")
+
+;;
+;; Examples
+;;
+(defparameter *names* '()
+  "List of names (string) given to `hello`. Will be autocompleted by `goodbye`.")
 
 (defun hello (name)
-  "Takes only one argument."
-  (format t "hello ~a~&" name))
+  "Takes only one argument. Adds the given name to the global
+  `*names*` global variable, used to complete arguments of `goodbye`.
+  "
+  (format t "hello ~a~&" name)
+  (push name *names*))
+
+(defun goodbye (name)
+  "Says goodby to name, where `name` should be completed from what was given to `hello`."
+  (format t "goodbye ~a~&" name))
+
+(defun init-completions ()
+  (push '("goodbye" . *names*) *args-completions*))
 
 (defun echo (string &rest more)
   "Print the rest of the line. Takes any number of arguments."
   (format t "~a~{ ~a~}~&" string more))
 
+;;
+;; Lib
+;;
+;; (defun assoc-value (alist key &key (test #'equalp))
+;;   ;; Don't import Alexandria just for that.
+;;   ;; See also Quickutil to import only the utility we need.
+;;   ;; http://quickutil.org/lists/
+;;   (cdr (assoc key alist :test test)))
+
 (defun common-prefix (items)
-  "Find the common prefix between strings.
-
-   Uses the built-in `mismatch', that returns the position at which
-   the strings fail to match.
-
-   Example: `(str:common-prefix '(\"foobar\" \"foozz\"))` => \"foo\"
-
-   - items: list of strings
-   - Return: a string.
-
-  "
-  ;; thanks koji-kojiro/cl-repl
+  ;; tmp waiting for cl-str 0.5 in Quicklisp february.
   (when items (subseq
                (car items)
                0
@@ -50,6 +78,15 @@
         (cons (common-prefix els) els)
         els)))
 
+(defun complete-for-args (text line)
+  "Completion for arguments."
+  (let* ((verb (first (str:words line)))
+         (list-or-function (alexandria:assoc-value *args-completions* verb :test 'equal)))
+    (if list-or-function
+        ;; with a list of strings.
+        ;; todo: with a function.
+        (select-completions text (symbol-value list-or-function)))))
+
 (defun custom-complete (text start end)
   "Complete a symbol.
 
@@ -60,7 +97,8 @@
   "
   (declare (ignore end))
   (if (zerop start)
-      (select-completions text *verbs*)))
+      (select-completions text *verbs*)
+      (complete-for-args text rl:*line-buffer*)))
 
 (defun functions-to-verbs ()
   "Add exported functions of `*package*` to the list of `*verbs*` to complete,
@@ -79,6 +117,7 @@
 
   ;; register completion
   (rl:register-function :complete #'custom-complete)
+  (init-completions)                    ;; inside a function for executable.
 
   (functions-to-verbs)
   (format t "verbs: ~a~&" *verbs*)
