@@ -9,17 +9,18 @@
            :hello
            :echo
            :*verbose*))
+
+;; The package to be used in the user's init files.
+(defpackage replic.user
+  (:use :cl))
+
 (in-package :replic)
 
-;; shadow works with build but not on Slime ??
-(defun set (var arg)
-  "Change this variable."
-  (setf (symbol-value (find-symbol (string-upcase var))) (if (string= "t" arg)
-                                                             t
-                                                             (if (string= "nil" arg)
-                                                                 nil
-                                                                 arg)))
-  (format t "~a set to ~a~&" var arg))
+(defparameter *init-file* #p"~/.replic.lisp"
+              "The init file to load at startup, containing any lisp
+              code to be `load`ed. It exports variables and functions
+              to be used at the CLI, and how to complete them and
+              their arguments.")
 
 (defparameter *verbs* '()
   "List of commands for the REPL.")
@@ -56,12 +57,21 @@
 (defun goodbye (name)
   "Says goodbye to name, where `name` should be completed from what was given to `hello`."
   (when *verbose*
-    (format t "[log] - verbose is ~a~&" *verbose*))
+    (format t "[lo]g - verbose is ~a~&" *verbose*))
   (format t "goodbye ~a~&" name))
 
 (defun complete-hello ()
   ;; todo
   '("john" "maria"))
+
+;;
+;; Lib
+;;
+;; (defun assoc-value (alist key &key (test #'equalp))
+;;   ;; Don't import Alexandria just for that.
+;;   ;; See also Quickutil to import only the utility we need.
+;;   ;; http://quickutil.org/lists/
+;;   (cdr (assoc key alist :test test)))
 
 (defun init-completions ()
   (push '("goodbye" . *names*) *args-completions*)
@@ -73,14 +83,15 @@
   "Print the rest of the line. Takes any number of arguments."
   (format t "~a~{ ~a~}~&" string more))
 
-;;
-;; Lib
-;;
-;; (defun assoc-value (alist key &key (test #'equalp))
-;;   ;; Don't import Alexandria just for that.
-;;   ;; See also Quickutil to import only the utility we need.
-;;   ;; http://quickutil.org/lists/
-;;   (cdr (assoc key alist :test test)))
+;; shadow works with build but not on Slime ??
+(defun set (var arg)
+  "Change this variable."
+  (setf (symbol-value (find-symbol (string-upcase var))) (if (string= "t" arg)
+                                                             t
+                                                             (if (string= "nil" arg)
+                                                                 nil
+                                                                 arg)))
+  (format t "~a set to ~a~&" var arg))
 
 (defun common-prefix (items)
   ;; tmp waiting for cl-str 0.5 in Quicklisp february.
@@ -129,14 +140,14 @@
 (defparameter *variables* '()
   "List of parameters (str), setable with `set`.")
 
-(defun functions-to-verbs ()
+(defun functions-to-verbs (&optional (package *package*))
   "Add exported functions of `*package*` to the list of `*verbs*` to complete,
    add exported variables to the list of `set`-able variables.
 
    Remove any symbol named 'main'.
 
   "
-  (do-external-symbols (it)
+  (do-external-symbols (it package)
     (if (str:starts-with? "*" (string it))
         (push (string-downcase (string it)) *variables*)
         (push (string-downcase (string it)) *verbs*)))
@@ -150,9 +161,11 @@
 
   ;; register completion
   (rl:register-function :complete #'custom-complete)
-  (init-completions)                    ;; inside a function for executable.
+  (init-completions) ;; inside a function for executable.
 
-  (functions-to-verbs)
+  (functions-to-verbs :replic)
+  (functions-to-verbs :replic.user)
+
   (handler-case
       (do ((i 0 (1+ i))
            (text "")
@@ -166,9 +179,12 @@
                            :add-history t))
         (setf verb (first (str:words text)))
         (setf function (if (member verb *verbs* :test 'equal)
-                           (find-symbol (string-upcase verb))))
+                           ;; might do better than this or.
+                           (or (find-symbol (string-upcase verb))
+                               (find-symbol (string-upcase verb) :replic.user))))
         (setf variable (if (member verb *variables* :test 'equal)
-                           (find-symbol (string-upcase verb))))
+                           (or (find-symbol (string-upcase verb))
+                               (find-symbol (string-upcase verb) :replic.user))))
         (setf args (rest (str:words text)))
 
         (if function
@@ -177,8 +193,8 @@
               (error (c) (format t "Error: ~a~&" c)))
 
             (if variable
-                  (format t "~a~&" (symbol-value variable))
-                  (format t "No command or variable bound to ~a~&" verb)))
+                (format t "~a~&" (symbol-value variable))
+                (format t "No command or variable bound to ~a~&" verb)))
 
         (finish-output)
 
@@ -194,6 +210,11 @@
 (defun handle-parser-error (c)
   (format t "cli args parser error: ~a~&" (opts:option c)))
 
+(defun load-init ()
+  "Load the init file."
+  (when (probe-file *init-file*)
+    (load *init-file*)))
+
 (defun main ()
   "Parse command line arguments and start the repl.
   "
@@ -201,7 +222,12 @@
     (:name :help
            :description "Print this help and exit."
            :short #\h
-           :long "help"))
+           :long "help")
+
+    (:name :quiet
+           :description "Do not load the init file."
+           :short #\q
+           :long "quiet"))
 
   (multiple-value-bind (options)
       (handler-bind ((error #'handle-parser-error))
@@ -209,5 +235,8 @@
 
     (if (getf options :help)
         (opts:describe))
+
+    (unless (getf options :quiet)
+      (load-init))
 
     (repl)))
