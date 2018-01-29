@@ -1,12 +1,25 @@
 (defpackage replic
   (:use :cl)
+  (:shadow #:set)
   (:export :main
            :help
+           :set
+           ;; examples:
            :goodbye
            :hello
-           :echo))
+           :echo
+           :*verbose*))
 (in-package :replic)
 
+;; shadow works with build but not on Slime ??
+(defun set (var arg)
+  "Change this variable."
+  (setf (symbol-value (find-symbol (string-upcase var))) (if (string= "t" arg)
+                                                             t
+                                                             (if (string= "nil" arg)
+                                                                 nil
+                                                                 arg)))
+  (format t "~a set to ~a~&" var arg))
 
 (defparameter *verbs* '()
   "List of commands for the REPL.")
@@ -28,6 +41,8 @@
 ;;
 ;; Examples
 ;;
+(defparameter *verbose* nil "Example setting.")
+
 (defparameter *names* '()
   "List of names (string) given to `hello`. Will be autocompleted by `goodbye`.")
 
@@ -39,11 +54,20 @@
   (push name *names*))
 
 (defun goodbye (name)
-  "Says goodby to name, where `name` should be completed from what was given to `hello`."
+  "Says goodbye to name, where `name` should be completed from what was given to `hello`."
+  (when *verbose*
+    (format t "[log] - verbose is ~a~&" *verbose*))
   (format t "goodbye ~a~&" name))
 
+(defun complete-hello ()
+  ;; todo
+  '("john" "maria"))
+
 (defun init-completions ()
-  (push '("goodbye" . *names*) *args-completions*))
+  (push '("goodbye" . *names*) *args-completions*)
+  (push '("hello" . #'complete-hello) *args-completions*)
+  ;; the following is needed.
+  (push '("set" . *variables*) *args-completions*))
 
 (defun echo (string &rest more)
   "Print the rest of the line. Takes any number of arguments."
@@ -70,7 +94,7 @@
                  (cdr items))))))
 
 
-(defun select-completions (text list)
+(defun complete-from-list (text list)
   "Select all verbs from `list' that start with `text'."
   (let ((els (remove-if-not (alexandria:curry #'str:starts-with? text)
                             list)))
@@ -78,14 +102,14 @@
         (cons (common-prefix els) els)
         els)))
 
-(defun complete-for-args (text line)
+(defun complete-args (text line)
   "Completion for arguments."
   (let* ((verb (first (str:words line)))
          (list-or-function (alexandria:assoc-value *args-completions* verb :test 'equal)))
     (if list-or-function
         ;; with a list of strings.
         ;; todo: with a function.
-        (select-completions text (symbol-value list-or-function)))))
+        (complete-from-list text (symbol-value list-or-function)))))
 
 (defun custom-complete (text start end)
   "Complete a symbol.
@@ -97,8 +121,13 @@
   "
   (declare (ignore end))
   (if (zerop start)
-      (select-completions text *verbs*)
-      (complete-for-args text rl:*line-buffer*)))
+      (if (str:starts-with? "*" text)
+          (complete-from-list text *variables*)
+          (complete-from-list text *verbs*))
+      (complete-args text rl:*line-buffer*)))
+
+(defparameter *variables* '()
+  "List of parameters (str), setable with `set`.")
 
 (defun functions-to-verbs ()
   "Add exported functions of `*package*` to the list of `*verbs*` to complete,
@@ -108,8 +137,12 @@
 
   "
   (do-external-symbols (it)
-    (push (string-downcase (string it)) *verbs*))
-  (setf *verbs* (remove "main" *verbs* :test 'equal))
+    (if (str:starts-with? "*" (string it))
+        (push (string-downcase (string it)) *variables*)
+        (push (string-downcase (string it)) *verbs*)))
+  (values
+   (setf *verbs* (remove "main" *verbs* :test 'equal))
+   *variables*)
   )
 
 (defun repl ()
@@ -120,19 +153,22 @@
   (init-completions)                    ;; inside a function for executable.
 
   (functions-to-verbs)
-  (format t "verbs: ~a~&" *verbs*)
   (handler-case
       (do ((i 0 (1+ i))
            (text "")
            (verb "")
            (function nil)
+           (variable nil)
            (args ""))
           ((string= "quit" (str:trim text)))
         (setf text
               (rl:readline :prompt (cl-ansi-text:green "replic > ")
                            :add-history t))
         (setf verb (first (str:words text)))
-        (setf function (find-symbol (string-upcase verb)))
+        (setf function (if (member verb *verbs* :test 'equal)
+                           (find-symbol (string-upcase verb))))
+        (setf variable (if (member verb *variables* :test 'equal)
+                           (find-symbol (string-upcase verb))))
         (setf args (rest (str:words text)))
 
         (if function
@@ -140,7 +176,9 @@
                 (apply function args)
               (error (c) (format t "Error: ~a~&" c)))
 
-            (format t "No command bound to ~a~&" verb))
+            (if variable
+                  (format t "~a~&" (symbol-value variable))
+                  (format t "No command or variable bound to ~a~&" verb)))
 
         (finish-output)
 
