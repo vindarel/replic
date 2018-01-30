@@ -231,7 +231,8 @@
   "Load `~/.replic.lisp` or the given file."
   (if file
       (if (probe-file file)
-          (load file)
+          (progn (load file)
+                 (setf *init-file* file))
           (progn (format-error (format nil "The file ~a does not exist.~&" file))
                  (uiop:quit)))
       (when (probe-file *init-file*)
@@ -264,7 +265,8 @@
     (handler-case
         (progn
           (if (getf options :help)
-              (opts:describe))
+              (progn (opts:describe)
+                     (uiop:quit)))
 
           (unless (getf options :quiet)
             (load-init (getf options :load)))
