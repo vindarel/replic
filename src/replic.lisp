@@ -218,13 +218,22 @@
       (format t "Unknown error: ~&~a~&" c)))
   )
 
+(defun format-error (msg)
+  "Print this message in red on error output."
+  (format *error-output* (cl-ansi-text:red msg)))
+
 (defun handle-parser-error (c)
   (format t "cli args parser error: ~a~&" (opts:option c)))
 
-(defun load-init ()
-  "Load the init file."
-  (when (probe-file *init-file*)
-    (load *init-file*)))
+(defun load-init (&optional file)
+  "Load `~/.replic.lisp` or the given file."
+  (if file
+      (if (probe-file file)
+          (load file)
+          (progn (format-error (format nil "The file ~a does not exist.~&" file))
+                 (uiop:quit)))
+      (when (probe-file *init-file*)
+        (load *init-file*))))
 
 (defun main ()
   "Parse command line arguments and start the repl.
@@ -238,16 +247,29 @@
     (:name :quiet
            :description "Do not load the init file."
            :short #\q
-           :long "quiet"))
+           :long "quiet")
+
+    (:name :load
+           :description "Load the given file."
+           :short #\l
+           :long "load"
+           :arg-parser #'string))
 
   (multiple-value-bind (options)
       (handler-bind ((error #'handle-parser-error))
         (opts:get-opts))
 
-    (if (getf options :help)
-        (opts:describe))
+    (handler-case
+        (progn
+          (if (getf options :help)
+              (opts:describe))
 
-    (unless (getf options :quiet)
-      (load-init))
+          (unless (getf options :quiet)
+            (load-init (getf options :load)))
 
-    (repl)))
+          (repl)
+          )
+      (error (c) (progn (format *error-output* "~a~&" c)
+                        (uiop:quit)))
+
+      )))
