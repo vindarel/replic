@@ -9,6 +9,7 @@
            :goodbye
            :hello
            :echo
+           :vim
            :*verbose*))
 
 ;; The package to be used in the user's init files.
@@ -64,6 +65,11 @@
 (defun complete-hello ()
   ;; todo
   '("john" "maria"))
+
+(defun vim ()
+  (uiop:run-program "vim"
+                    :output :interactive
+                    :input :interactive))
 
 ;;
 ;; Lib
