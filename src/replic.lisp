@@ -4,6 +4,7 @@
   (:export :main
            :help
            :set
+           :reload
            ;; examples:
            :goodbye
            :hello
@@ -237,6 +238,10 @@
                  (uiop:quit)))
       (when (probe-file *init-file*)
         (load *init-file*))))
+
+(defun reload ()
+  "Reload the lisp file loaded at startup."
+  (load-init *init-file*))
 
 (defun main ()
   "Parse command line arguments and start the repl.
