@@ -80,6 +80,29 @@
 ;;   ;; http://quickutil.org/lists/
 ;;   (cdr (assoc key alist :test test)))
 
+(defparameter *help-preamble* ""
+  "Text to display before the list of commands and variables.")
+
+(defun help ()
+  "Print the help of all available commands."
+  ;; possible: help of a given command, show arguments (swank-backend:arglist), color markdown,...
+  ;; preamble, postamble,...
+  ;; xxx the 10 padding should adapt to the largest command.
+  (when *help-preamble*
+    (format t *help-preamble*)
+    (format t "~%~%"))
+  (format t "~%Available commands~%==================~%")
+  (mapcar (lambda (it)
+            ;; xxx justify text
+            (format t "~10a~t...~t~a~&" it (documentation (find-symbol (string-upcase it)) 'function)))
+          (sort *verbs* #'string<))
+
+  (format t "~%Available variables~%===================~%")
+  (mapcar (lambda (it)
+            ;; xxx justify text
+            (format t "~10a~t...~t~a~&" it (documentation (find-symbol (string-upcase it)) 'variable)))
+          (sort *variables* #'string<)))
+
 (defun init-completions ()
   (push '("goodbye" . *names*) *args-completions*)
   (push '("hello" . #'complete-hello) *args-completions*)

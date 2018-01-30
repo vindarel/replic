@@ -69,6 +69,35 @@ function (todo), add it to the `*args-completions*` alist:
 (push '("hello" . #'complete-hello) *args-completions*)
 ~~~
 
+### Builtin help
+
+You get a built-in `help` command that shows the documentation of
+functions and variables:
+
+~~~
+replic > help
+
+Available commands
+==================
+duckduckgo ... NIL
+echo       ... Print the rest of the line. Takes any number of arguments.
+goodbye    ... Says goodbye to name, where `name` should be completed from what was given to `hello`.
+google     ... NIL
+hello      ... Takes only one argument. Adds the given name to the global
+  `*names*` global variable, used to complete arguments of `goodbye`.
+
+help       ... Print the help of all available commands.
+reload     ... NIL
+set        ... Change this variable.
+vim        ... NIL
+
+Available variables
+===================
+*verbose*  ... Example setting.
+~~~
+
+Write a preamble in `*help-preamble*`.
+
 
 ## How it works
 
