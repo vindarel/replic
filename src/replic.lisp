@@ -156,6 +156,12 @@
    *variables*)
   )
 
+(defun confirm ()
+  ""
+  (member (rl:readline :prompt (format nil  "~%Do you want to quit ? [Y]/n : "))
+          '("y" "Y" "")
+          :test 'equal))
+
 (defun repl ()
   (in-package :replic) ;; needed for executable
 
@@ -187,14 +193,18 @@
                                (find-symbol (string-upcase verb) :replic.user))))
         (setf args (rest (str:words text)))
 
-        (if function
-            (handler-case
-                (apply function args)
-              (error (c) (format t "Error: ~a~&" c)))
+        (if (string= verb "NIL")
+            ;; that's a C-d
+            (if (confirm)
+                (uiop:quit))
+            (if function
+                (handler-case
+                    (apply function args)
+                  (error (c) (format t "Error: ~a~&" c)))
 
-            (if variable
-                (format t "~a~&" (symbol-value variable))
-                (format t "No command or variable bound to ~a~&" verb)))
+                (if variable
+                    (format t "~a~&" (symbol-value variable))
+                    (format t "No command or variable bound to ~a~&" verb))))
 
         (finish-output)
 
@@ -202,7 +212,8 @@
 
     (#+sbcl sb-sys:interactive-interrupt
       () (progn
-           (uiop:quit)))
+           (when (confirm)
+             (uiop:quit))))
     (error (c)
       (format t "Unknown error: ~&~a~&" c)))
   )
