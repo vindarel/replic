@@ -223,7 +223,9 @@
   (format *error-output* (cl-ansi-text:red msg)))
 
 (defun handle-parser-error (c)
-  (format t "cli args parser error: ~a~&" (opts:option c)))
+  (format t "Bad command line argument: ~a~&" (opts:option c))
+  (opts:describe)
+  (uiop:quit))
 
 (defun load-init (&optional file)
   "Load `~/.replic.lisp` or the given file."
