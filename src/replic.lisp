@@ -80,8 +80,12 @@
 ;;   ;; http://quickutil.org/lists/
 ;;   (cdr (assoc key alist :test test)))
 
-(defparameter *help-preamble* ""
+(defparameter *help-preamble* nil
   "Text to display before the list of commands and variables.")
+
+(defun format-h1 (txt &key (stream *standard-output*))
+  "Write txt with an underline."
+  (format stream "~&~a~%~a~%" txt (str:repeat (length txt) "=")))
 
 (defun help ()
   "Print the help of all available commands."
@@ -91,13 +95,14 @@
   (when *help-preamble*
     (format t *help-preamble*)
     (format t "~%~%"))
-  (format t "~%Available commands~%==================~%")
+  (format-h1 "Available commands")
   (mapcar (lambda (it)
             ;; xxx justify text
             (format t "~10a~t...~t~a~&" it (documentation (find-symbol (string-upcase it)) 'function)))
           (sort *verbs* #'string<))
 
-  (format t "~%Available variables~%===================~%")
+  (terpri)
+  (format-h1 "Available variables")
   (mapcar (lambda (it)
             ;; xxx justify text
             (format t "~10a~t...~t~a~&" it (documentation (find-symbol (string-upcase it)) 'variable)))
