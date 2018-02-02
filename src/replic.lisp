@@ -93,7 +93,7 @@
   ;; preamble, postamble,...
   ;; xxx the 10 padding should adapt to the largest command.
   (when *help-preamble*
-    (format t *help-preamble*)
+    (format-code *help-preamble*)
     (format t "~%~%"))
   (format-h1 "Available commands")
   (mapcar (lambda (it)

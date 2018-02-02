@@ -74,18 +74,16 @@ function (todo), add it to the `*args-completions*` alist:
 You get a built-in `help` command that shows the documentation of
 functions and variables:
 
-~~~
+```
 replic > help
 
 Available commands
 ==================
 duckduckgo ... NIL
 echo       ... Print the rest of the line. Takes any number of arguments.
-goodbye    ... Says goodbye to name, where `name` should be completed from what was given to `hello`.
-google     ... NIL
 hello      ... Takes only one argument. Adds the given name to the global
   `*names*` global variable, used to complete arguments of `goodbye`.
-
+goodbye    ... Says goodbye to name, where `name` should be completed from what was given to `hello`.
 help       ... Print the help of all available commands.
 reload     ... NIL
 set        ... Change this variable.
@@ -94,14 +92,20 @@ vim        ... NIL
 Available variables
 ===================
 *verbose*  ... Example setting.
-~~~
+```
 
 Write a preamble in `*help-preamble*`.
 
+### Other helpers
+
+* print colored output from markdown or code with pygments:
+  `(format-markdown txt :lang "md")`. It outputs text for a console
+  display with ansi colours. Needs [pygments](http://pygments.org), or
+  does nothing.
 
 ## How it works
 
-The mecanism is an abstraction on `cl-readline`'s completion function.
+A generalization on `cl-readline`.
 
 
 ## Resources

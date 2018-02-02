@@ -13,7 +13,8 @@
                :unix-opts)
   :components ((:module "src"
                 :components
-                ((:file "replic"))))
+                ((:file "replic")
+                 (:file "utils"))))
 
   :build-operation "program-op"
   :build-pathname "replic"
