@@ -24,7 +24,7 @@
               to be used at the CLI, and how to complete them and
               their arguments.")
 
-(defparameter *verbs* '()
+(defparameter *commands* '()
   "List of commands for the REPL.")
 
 (defparameter *args-completions* '()
@@ -99,7 +99,7 @@
   (mapcar (lambda (it)
             ;; xxx justify text
             (format t "~10a~t...~t~a~&" it (documentation (find-symbol (string-upcase it)) 'function)))
-          (sort *verbs* #'string<))
+          (sort *commands* #'string<))
 
   (terpri)
   (format-h1 "Available variables")
@@ -141,7 +141,7 @@
 
 
 (defun complete-from-list (text list)
-  "Select all verbs from `list' that start with `text'."
+  "Select all commands from `list' that start with `text'."
   (let ((els (remove-if-not (alexandria:curry #'str:starts-with? text)
                             list)))
     (if (cdr els)
@@ -162,21 +162,21 @@
 
   text is the partially entered word. start and end are the position on `rl:*line-buffer*'.
 
-  When the cursor is at the beginning of the prompt, complete from `*verbs*`.
+  When the cursor is at the beginning of the prompt, complete from `*commands*`.
 
   "
   (declare (ignore end))
   (if (zerop start)
       (if (str:starts-with? "*" text)
           (complete-from-list text *variables*)
-          (complete-from-list text *verbs*))
+          (complete-from-list text *commands*))
       (complete-args text rl:*line-buffer*)))
 
 (defparameter *variables* '()
   "List of parameters (str), setable with `set`.")
 
-(defun functions-to-verbs (&optional (package *package*))
-  "Add exported functions of `*package*` to the list of `*verbs*` to complete,
+(defun functions-to-commands (&optional (package *package*))
+  "Add exported functions of `*package*` to the list of `*commands*` to complete,
    add exported variables to the list of `set`-able variables.
 
    Remove any symbol named 'main'.
@@ -185,9 +185,9 @@
   (do-external-symbols (it package)
     (if (str:starts-with? "*" (string it))
         (push (string-downcase (string it)) *variables*)
-        (push (string-downcase (string it)) *verbs*)))
+        (push (string-downcase (string it)) *commands*)))
   (values
-   (setf *verbs* (remove "main" *verbs* :test 'equal))
+   (setf *commands* (remove "main" *commands* :test 'equal))
    *variables*)
   )
 
@@ -204,8 +204,8 @@
   (rl:register-function :complete #'custom-complete)
   (init-completions) ;; inside a function for executable.
 
-  (functions-to-verbs :replic)
-  (functions-to-verbs :replic.user)
+  (functions-to-commands :replic)
+  (functions-to-commands :replic.user)
 
   (handler-case
       (do ((i 0 (1+ i))
@@ -219,7 +219,7 @@
               (rl:readline :prompt (cl-ansi-text:green "replic > ")
                            :add-history t))
         (setf verb (first (str:words text)))
-        (setf function (if (member verb *verbs* :test 'equal)
+        (setf function (if (member verb *commands* :test 'equal)
                            ;; might do better than this or.
                            (or (find-symbol (string-upcase verb))
                                (find-symbol (string-upcase verb) :replic.user))))
