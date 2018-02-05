@@ -130,9 +130,8 @@
 
 (defun init-completions ()
   (push '("goodbye" . *names*) *args-completions*)
-  (push '("hello" . #'complete-hello) *args-completions*)
   (push '("set" . *variables*) *args-completions*)
-  (push '("help" . #'help-completion) *args-completions*))
+  (push  (cons "help" #'help-completion) *args-completions*))
 
 (defun echo (string &rest more)
   "Print the rest of the line. Takes any number of arguments."
@@ -174,10 +173,15 @@
    Take the list of completion candidates from the `*args-completions*` alist."
   (let* ((verb (first (str:words line)))
          (list-or-function (alexandria:assoc-value *args-completions* verb :test 'equal)))
-    (if list-or-function
-        ;; with a list of strings.
-        ;; todo: with a function.
-        (complete-from-list text (symbol-value list-or-function)))))
+    (when list-or-function
+      (cond
+        ((symbolp list-or-function)
+         ;; with a list of strings.
+         (complete-from-list text (symbol-value list-or-function)))
+
+        ((functionp list-or-function)
+         ;; with a function that returns a list of strings.
+         (complete-from-list text (funcall list-or-function)))))))
 
 (defun custom-complete (text start end)
   "Complete a symbol.
@@ -272,7 +276,7 @@
            (when (confirm)
              (uiop:quit))))
     (error (c)
-      (format t "Unknown error: ~&~a~&" c)))
+      (format t "~&Unknown error: ~&~a~&" c)))
   )
 
 (defun format-error (msg)

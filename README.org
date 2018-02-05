@@ -66,8 +66,10 @@ function (todo), add it to the =*args-completions*= alist:
 
 #+BEGIN_SRC lisp
 (push '("goodbye" . *names*) *args-completions*)
-(push '("hello" . #'complete-hello) *args-completions*)
+(push (cons "hello" #'complete-hello) *args-completions*)
 #+END_SRC
+
+=complete-hello= must return a list of strings.
 
 *** Builtin help
 
