@@ -87,32 +87,52 @@
   "Write txt with an underline."
   (format stream "~&~a~%~a~%" txt (str:repeat (length txt) "=")))
 
-(defun help ()
-  "Print the help of all available commands."
-  ;; possible: help of a given command, show arguments (swank-backend:arglist), color markdown,...
-  ;; preamble, postamble,...
-  ;; xxx the 10 padding should adapt to the largest command.
+(defun format-help (name function-or-variable)
+  "Format a line of help (with right justification etc)."
+  (format t "~10a~t...~a~&" name (documentation (find-symbol (string-upcase name)) function-or-variable)))
+
+(defun help-all ()
+  "Print all the hepl"
   (when *help-preamble*
     (format-code *help-preamble*)
     (format t "~%~%"))
   (format-h1 "Available commands")
   (mapcar (lambda (it)
             ;; xxx justify text
-            (format t "~10a~t...~t~a~&" it (documentation (find-symbol (string-upcase it)) 'function)))
+            (format-help it 'function))
           (sort *commands* #'string<))
-
   (terpri)
   (format-h1 "Available variables")
   (mapcar (lambda (it)
             ;; xxx justify text
-            (format t "~10a~t...~t~a~&" it (documentation (find-symbol (string-upcase it)) 'variable)))
+            (format-help it 'variable))
           (sort *variables* #'string<)))
+
+(defun help-arg (arg)
+  "Print the documentation of this command or variable."
+  (when (member arg *commands* :test #'equal)
+    (format-help arg 'function))
+  (when (member arg *variables* :test #'equal)
+    (format-help arg 'variable)))
+
+(defun help (&optional arg)
+  "Print the help of all available commands. If given an argument, print its documentation."
+  ;; possible: show arguments list (swank-backend:arglist), color markdown,
+  ;; preamble, postamble,...
+  ;; xxx the 10 padding should adapt to the largest command.
+  (if arg
+      (help-arg arg)
+      (help-all)))
+
+(defun help-completion ()
+  "Return a list of strings, strings that will be completion candidates."
+  (append *commands* *variables*))
 
 (defun init-completions ()
   (push '("goodbye" . *names*) *args-completions*)
   (push '("hello" . #'complete-hello) *args-completions*)
-  ;; the following is needed.
-  (push '("set" . *variables*) *args-completions*))
+  (push '("set" . *variables*) *args-completions*)
+  (push '("help" . #'help-completion) *args-completions*))
 
 (defun echo (string &rest more)
   "Print the rest of the line. Takes any number of arguments."
@@ -120,7 +140,7 @@
 
 ;; shadow works with build but not on Slime ??
 (defun set (var arg)
-  "Change this variable."
+  "Change this variable. t and nil denote true and false."
   (setf (symbol-value (find-symbol (string-upcase var))) (if (string= "t" arg)
                                                              t
                                                              (if (string= "nil" arg)
@@ -149,7 +169,9 @@
         els)))
 
 (defun complete-args (text line)
-  "Completion for arguments."
+  "Completion for arguments.
+
+   Take the list of completion candidates from the `*args-completions*` alist."
   (let* ((verb (first (str:words line)))
          (list-or-function (alexandria:assoc-value *args-completions* verb :test 'equal)))
     (if list-or-function
