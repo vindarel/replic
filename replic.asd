@@ -14,6 +14,7 @@
   :components ((:module "src"
                 :components
                 ((:file "replic")
+                 (:file "help")
                  (:file "utils"))))
 
   :build-operation "program-op"
