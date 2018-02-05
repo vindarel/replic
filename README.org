@@ -4,7 +4,7 @@
 
 - a function becomes a command in the command line interface. You get
     completion for functions.
-- a variable becomes a variable, which is =set=able in the repl
+- a variable becomes a variable, which is =set='able in the repl
     (=set= then comes with completion of variables).
 - you can define how to complete a function's arguments. Examples below.
 
@@ -16,7 +16,7 @@ More examples to come (basic ones follow).
 
 This is an attempt at factoring out what I did several times with =cl-readline=.
 
-=! very experimental !=
+=! experimental !=
 
 
 ** Installation
@@ -50,9 +50,9 @@ Your =.replic.lisp= looks like this:
 
 *** Set variables
 
-: set \*variable\*
+: set *variable*
 
-(we kept earmuffs).
+(we kept earmuffs to denote variables).
 
 We get completion on the variables list.
 
@@ -62,7 +62,7 @@ We get completion on the variables list.
 Write a function or a variable, =export= it.
 
 Associate a function name with a list of completion candidates or a
-function (todo), add it to the =*args-completions*= alist:
+function, add it to the =*args-completions*= alist:
 
 #+BEGIN_SRC lisp
 (push '("goodbye" . *names*) *args-completions*)
@@ -98,7 +98,7 @@ Available variables
 
 Write a preamble in =*help-preamble*=.
 
-You can get help of commands and variables (with completion):
+You can read the help of a specific command or variable (with completion):
 
 : help help
 
@@ -106,7 +106,7 @@ You can get help of commands and variables (with completion):
 
 - print colored output from markdown or code with pygments:
   =(format-markdown txt :lang "md")=. It outputs text for a console
-  display with ansi colours. Needs [pygments](http://pygments.org), or
+  display with ansi colours. Needs [[http://pygments.org][pygments]], or
   does nothing.
 
 ** How it works
@@ -117,15 +117,15 @@ A generalization on =cl-readline=.
 ** Resources
 
 
-- https://github.com/mrkkrp/cl-readline
-- https://github.com/vindarel/cl-readline-example
+- [[https://github.com/vindarel/cl-readline][cl-readline]]
+- [[https://github.com/vindarel/cl-readline-example][cl-readline-example]]
 
 Learning:
 
-- https://github.com/LispCookbook/cl-cookbook
+- [[https://github.com/LispCookbook/cl-cookbook][Common Lisp Cookbook]]
 - https://github.com/CodyReichert/awesome-cl#learning-and-tutorials
 
 Getting started:
 
-- [editors (Emacs, Portacle, Vim, Lem, Atom, Sublime), notebooks, REPLs](https://lispcookbook.github.io/cl-cookbook/editor-support.html
+- [[https://lispcookbook.github.io/cl-cookbook/editor-support.html][Common Lisp editors (Emacs, Portacle, Vim, Lem, Atom, Sublime), notebooks, REPLs]]
 - https://lispcookbook.github.io/cl-cookbook/getting-started.html
