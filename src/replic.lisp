@@ -199,32 +199,34 @@
         (setf text
               (rl:readline :prompt (cl-ansi-text:green "replic > ")
                            :add-history t))
-        (setf verb (first (str:words text)))
-        (setf function (if (member verb *commands* :test 'equal)
-                           ;; might do better than this or.
-                           (or (find-symbol (string-upcase verb))
-                               (find-symbol (string-upcase verb) :replic.user))))
-        (setf variable (if (member verb *variables* :test 'equal)
-                           (or (find-symbol (string-upcase verb))
-                               (find-symbol (string-upcase verb) :replic.user))))
-        (setf args (rest (str:words text)))
 
-        (if (string= verb "NIL")
-            ;; that's a C-d
-            (if (confirm)
-                (uiop:quit))
-            (if function
-                (handler-case
-                    (apply function args)
-                  (error (c) (format t "Error: ~a~&" c)))
+        (if (string= text "NIL")
+            ;; that's a C-d, a blank input is just "".
+            (when (confirm)
+              (uiop:quit)))
 
-                (if variable
-                    (format t "~a~&" (symbol-value variable))
-                    (format t "No command or variable bound to ~a~&" verb))))
+        (unless (str:blank? text)
+          (setf verb (first (str:words text)))
+          (setf function (if (member verb *commands* :test 'equal)
+                             ;; might do better than this or.
+                             (or (find-symbol (string-upcase verb))
+                                 (find-symbol (string-upcase verb) :replic.user))))
+          (setf variable (if (member verb *variables* :test 'equal)
+                             (or (find-symbol (string-upcase verb))
+                                 (find-symbol (string-upcase verb) :replic.user))))
+          (setf args (rest (str:words text)))
 
-        (finish-output)
 
-        )
+          (if (and verb function)
+              (handler-case
+                  (apply function args)
+                (error (c) (format t "Error: ~a~&" c)))
+
+              (if variable
+                  (format t "~a~&" (symbol-value variable))
+                  (format t "No command or variable bound to ~a~&" verb)))
+
+          (finish-output)))
 
     (#+sbcl sb-sys:interactive-interrupt
       () (progn
