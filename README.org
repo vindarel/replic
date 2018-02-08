@@ -109,6 +109,11 @@ You can read the help of a specific command or variable (with completion):
   display with ansi colours. Needs [[http://pygments.org][pygments]], or
   does nothing.
 
+*** Variables
+
+- =*prompt*= (str):  the readline prompt.  Defaults to just  => =. Can
+  contain ansi colours (use =cl-ansi-text:green= for example).
+
 ** How it works
 
 A generalization on =cl-readline=.

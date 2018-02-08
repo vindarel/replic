@@ -2,6 +2,7 @@
   (:use :cl)
   (:shadow #:set)
   (:export :main
+           :repl
            :help
            :set
            :reload
@@ -23,6 +24,9 @@
               code to be `load`ed. It exports variables and functions
               to be used at the CLI, and how to complete them and
               their arguments.")
+
+(defparameter *prompt* "> "
+  "The prompt. Can contain ansi colours (use cl-ansi-text:green etc).")
 
 (defparameter *commands* '()
   "List of commands for the REPL.")
@@ -193,7 +197,7 @@
            (args ""))
           ((string= "quit" (str:trim text)))
         (setf text
-              (rl:readline :prompt (cl-ansi-text:green "replic > ")
+              (rl:readline :prompt *prompt*
                            :add-history t))
 
         (if (string= text "NIL")
@@ -288,6 +292,8 @@
 
           (unless (getf options :quiet)
             (load-init (getf options :load)))
+
+          (setf *prompt* (cl-ansi-text:green "replic > "))
 
           ;; replic initialization:
           (init-completions)
