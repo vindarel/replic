@@ -30,9 +30,9 @@
 (defparameter *args-completions* '()
   "Alist that associates a command name (verb) to:
 
-  1) either a list of strings,
+  a) either a list of strings,
 
-  2) either a function returning the completion candidates. This
+  b) either a function returning the completion candidates. This
   function takes the partially entered argument as argument.
 
   Example usage:
@@ -183,10 +183,6 @@
 
   ;; register completion
   (rl:register-function :complete #'custom-complete)
-  (init-completions) ;; inside a function for executable.
-
-  (functions-to-commands :replic)
-  (functions-to-commands :replic.user)
 
   (handler-case
       (do ((i 0 (1+ i))
@@ -293,9 +289,14 @@
           (unless (getf options :quiet)
             (load-init (getf options :load)))
 
-          (repl)
-          )
-      (error (c) (progn (format *error-output* "~a~&" c)
-                        (uiop:quit)))
+          ;; replic initialization:
+          (init-completions)
 
-      )))
+          ;; create commands from the exported functions and variables.
+          (functions-to-commands :replic)
+          (functions-to-commands :replic.user)
+
+          ;; launch the repl.
+          (repl))
+      (error (c) (progn (format *error-output* "~a~&" c)
+                        (uiop:quit))))))
