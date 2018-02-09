@@ -3,6 +3,8 @@
   (:shadow #:set)
   (:export :main
            :repl
+           :init-completions
+           :functions-to-commands
            :help
            :set
            :reload
@@ -11,6 +13,10 @@
            :hello
            :echo
            :vim
+           :*args-completions*
+           :*commands*
+           :*custom-complete*
+           :*prompt*
            :*verbose*))
 
 ;; The package to be used in the user's init files.
@@ -45,6 +51,11 @@
 
   ")
 
+(defparameter *user-package* :replic.user
+  "The package that contains the symbols (functions and variables) we
+  want to create the repl for. Defaults to replic.user. Changed by
+  `functions-to-commands`.")
+
 ;;
 ;; Examples
 ;;
@@ -71,6 +82,7 @@
   '("john" "maria"))
 
 (defun vim ()
+  "Run vim."
   (uiop:run-program "vim"
                     :output :interactive
                     :input :interactive))
@@ -157,16 +169,28 @@
           (complete-from-list text *commands*))
       (complete-args text rl:*line-buffer*)))
 
+(defparameter *custom-complete* #'custom-complete
+  "Completion function.
+
+   When the cursor is at the beginning of the prompt, the default
+   function tries to complete a command or a variable (starting with
+   `*`.
+
+   Afterwards, it reads how to complete the function/variable
+   arguments from `complete-args`.")
+
 (defparameter *variables* '()
   "List of parameters (str), setable with `set`.")
 
-(defun functions-to-commands (&optional (package *package*))
+(defun functions-to-commands (&optional (package *user-package*))
   "Add exported functions of `*package*` to the list of `*commands*` to complete,
    add exported variables to the list of `set`-able variables.
 
    Remove any symbol named 'main'.
 
   "
+  (assert (symbolp package))
+  (setf *user-package* package)
   (do-external-symbols (it package)
     (if (str:starts-with? "*" (string it))
         (push (string-downcase (string it)) *variables*)
@@ -177,16 +201,16 @@
   )
 
 (defun confirm ()
-  ""
+  "Ask confirmation. Nothing means yes."
   (member (rl:readline :prompt (format nil  "~%Do you want to quit ? [Y]/n : "))
           '("y" "Y" "")
           :test 'equal))
 
-(defun repl ()
+(defun repl (&key (custom-complete *custom-complete*))
   (in-package :replic) ;; needed for executable
 
   ;; register completion
-  (rl:register-function :complete #'custom-complete)
+  (rl:register-function :complete custom-complete)
 
   (handler-case
       (do ((i 0 (1+ i))
@@ -205,15 +229,16 @@
             (when (confirm)
               (uiop:quit)))
 
+        (format t "commands: ~a~%variables: ~a~%" *commands* *variables*)
         (unless (str:blank? text)
           (setf verb (first (str:words text)))
           (setf function (if (member verb *commands* :test 'equal)
                              ;; might do better than this or.
                              (or (find-symbol (string-upcase verb))
-                                 (find-symbol (string-upcase verb) :replic.user))))
+                                 (find-symbol (string-upcase verb) *user-package*))))
           (setf variable (if (member verb *variables* :test 'equal)
                              (or (find-symbol (string-upcase verb))
-                                 (find-symbol (string-upcase verb) :replic.user))))
+                                 (find-symbol (string-upcase verb) *user-package*))))
           (setf args (rest (str:words text)))
 
 

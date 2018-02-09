@@ -1,20 +1,31 @@
 * Replic
 
-=replic= is first a ready-to-use executable that reads your code from =~/.replic.lisp=.
+Building a  readline application is  cool, but readline gives  you the
+basics  and you  must still  build  a REPL  around it:  loop and  read
+commands, catch a =C-c=, a =C-d=,  ask confirmation to quit, print the
+help,  setup  completions,  load  an init  file,  colorize  output,...
+=replic= does this for you.
 
-- a function becomes a command in the command line interface. You get
-    completion for functions.
-- a variable becomes a variable, which is =set='able in the repl
+You can use =replic= as a ready-to-use executable or as a library.
+
+Using  the executable,  you can  define functions  and variables  in
+=~/.replic.lisp= and they will be used as follows:
+
+- an =export='ed function becomes a command in the command line interface. You get
+    completion for functions  when your cursor is at  the beginning of
+  the prompt.
+- an =export='ed variable becomes a variable, which is =set='able in the repl
     (=set= then comes with completion of variables).
 - you can define how to complete a function's arguments. Examples below.
 
-=replic= is also a library with which you can automatically build a
-REPL from the (exported) functions and variables of a given package,
+=replic= is  also a library with  which you can automatically  build a
+REPL and  turn functions you already  have into commands in  the REPL,
 with the process described above.
 
-More examples to come (basic ones follow).
+Basic examples below, more to come.
 
-This is an attempt at factoring out what I did several times with =cl-readline=.
+This  is an  attempt at  generalizing what  I did  several times  with
+=cl-readline=.
 
 =! experimental !=
 
@@ -23,15 +34,28 @@ This is an attempt at factoring out what I did several times with =cl-readline=.
 
 Not in Quicklisp, clone into =~/quicklisp/local-projects/=.
 
-** Usage
+
+Build the executable with =make build=.
 
 : replic -h
 
-*** Use the executable and write your commands
+#+BEGIN_EXPORT ascii
+Available options:
+  -h, --help               Print this help and exit.
+  -q, --quiet              Do not load the init file.
+  -l, --load ARG           Load the given file.
+#+END_EXPORT
 
-Build with =make build=, run
+run:
 
 : ./replic
+
+and
+
+: help
+
+
+** The executable and the init file
 
 try =hello <name>= (completion for =hello=) and =goodbye <name>=,
 where <name> can be completed from what was given to =hello=.
@@ -52,7 +76,7 @@ Your =.replic.lisp= looks like this:
 
 : set *variable*
 
-(we kept earmuffs to denote variables).
+We kept the "earmuffs" to denote variables.
 
 We get completion on the variables list.
 
@@ -89,7 +113,7 @@ goodbye    ... Says goodbye to name, where `name` should be completed from what 
 help       ... Print the help of all available commands.
 reload     ... NIL
 set        ... Change this variable.
-vim        ... NIL
+vim        ... Run vim.
 
 Available variables
 ===================
@@ -102,17 +126,44 @@ You can read the help of a specific command or variable (with completion):
 
 : help help
 
+** Using replic as a library with an existing system
+
+#+BEGIN_SRC lisp
+;; change the prompt. It defaults to "> ". It can contain ansi colours.
+(setf replic:*prompt* (cl-ansi-text:green "replic > "))
+
+;; Create the bindings for completions, as you wish.
+(push '("goodbye" . *names*) *args-completions*)
+(push '("set" . *variables*) *args-completions*)
+(push  (cons "help" #'help-completion) *args-completions*)
+
+;; Create the commands from all the exported functions and variables (except "main").
+(replic:functions-to-commands :replic.user)
+
+;; Start the repl.
+(replic:repl)
+#+END_SRC
+
+That's it. You didn't have to write the REPL.
+
+You can give the repl your own completion function:
+
+#+BEGIN_SRC lisp
+(replic:repl :custom-complete #'my-custom-complete))
+#+END_SRC
+
+
+*** Variables
+
+ - =*prompt*= (str):  the readline prompt.  Defaults to just  => =. Can
+   contain ansi colours (use =cl-ansi-text:green= for example).
+
 *** Other helpers
 
 - print colored output from markdown or code with pygments:
   =(format-markdown txt :lang "md")=. It outputs text for a console
   display with ansi colours. Needs [[http://pygments.org][pygments]], or
   does nothing.
-
-*** Variables
-
-- =*prompt*= (str):  the readline prompt.  Defaults to just  => =. Can
-  contain ansi colours (use =cl-ansi-text:green= for example).
 
 ** How it works
 
