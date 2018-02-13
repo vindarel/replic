@@ -16,6 +16,7 @@
            :*args-completions*
            :*commands*
            :*custom-complete*
+           :*default-command-completion*
            :*prompt*
            :*verbose*))
 
@@ -50,6 +51,9 @@
   (push '(\"goodbye\" . *names*) *args-completions*)
 
   ")
+
+(defparameter *default-command-completion* nil
+  "A variable, list or function to use to complete all commands that don't have an associated completion method.")
 
 (defparameter *user-package* :replic.user
   "The package that contains the symbols (functions and variables) we
@@ -143,7 +147,9 @@
 
    Take the list of completion candidates from the `*args-completions*` alist."
   (let* ((verb (first (str:words line)))
-         (list-or-function (alexandria:assoc-value *args-completions* verb :test 'equal)))
+         (list-or-function (or
+                            (alexandria:assoc-value *args-completions* verb :test 'equal)
+                            *default-command-completion*)))
     (when list-or-function
       (cond
         ((symbolp list-or-function)

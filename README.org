@@ -27,6 +27,13 @@ Basic examples below, more to come.
 This  is an  attempt at  generalizing what  I did  several times  with
 =cl-readline=.
 
+What this is *not*:
+
+- this  is  not a  Lisp  REPL.  See [[https://github.com/koji-kojiro/cl-repl][cl-repl]]  for  that  (itself not  a
+  replacement for Slime ;) )
+- this is not a shell
+
+
 =! experimental !=
 
 
@@ -136,6 +143,9 @@ You can read the help of a specific command or variable (with completion):
 (push '("goodbye" . *names*) *args-completions*)
 (push '("set" . *variables*) *args-completions*)
 (push  (cons "help" #'help-completion) *args-completions*)
+
+;; You can set a default completion method for all other commands.
+(setf replic:*default-command-completion* (function-that-returns-list-of-strings))
 
 ;; Create the commands from all the exported functions and variables (except "main").
 (replic:functions-to-commands :replic.user)
