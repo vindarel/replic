@@ -16,7 +16,7 @@
   (format t "~10a~t...~a~&" name (documentation (find-symbol (string-upcase name)) function-or-variable)))
 
 (defun help-all ()
-  "Print all the hepl"
+  "Print all the help."
   (when *help-preamble*
     (format-code *help-preamble*)
     (format t "~%~%"))

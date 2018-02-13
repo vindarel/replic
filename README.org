@@ -135,24 +135,37 @@ You can read the help of a specific command or variable (with completion):
 
 ** Using replic as a library with an existing system
 
+Change the prompt. It defaults to "> ". It can contain ansi colours.
+
 #+BEGIN_SRC lisp
-;; change the prompt. It defaults to "> ". It can contain ansi colours.
 (setf replic:*prompt* (cl-ansi-text:green "replic > "))
-
-;; Create the bindings for completions, as you wish.
-(push '("goodbye" . *names*) *args-completions*)
-(push '("set" . *variables*) *args-completions*)
-(push  (cons "help" #'help-completion) *args-completions*)
-
-;; You can set a default completion method for all other commands.
-(setf replic:*default-command-completion* (function-that-returns-list-of-strings))
-
-;; Create the commands from all the exported functions and variables (except "main").
-(replic:functions-to-commands :replic.user)
-
-;; Start the repl.
-(replic:repl)
 #+END_SRC
+
+Define how to complete your commands:
+
+#+BEGIN_SRC lisp
+(push '("goodbye" . *names*) *args-completions*)
+(push  (cons "help" #'help-completion) *args-completions*)
+#+END_SRC
+
+You can  use a  list, a variable  containing a list  of strings,  or a
+function returning a list of strings.
+
+You can set a default completion method for all other commands:
+
+#+BEGIN_SRC lisp
+(setf replic:*default-command-completion* #'function-that-returns-list-of-strings)
+#+END_SRC
+
+Create the commands from all the exported functions and variables (except "main").
+
+#+BEGIN_SRC lisp
+(replic:functions-to-commands :my-package)
+#+END_SRC
+
+Start the repl:
+
+: (replic:repl)
 
 That's it. You didn't have to write the REPL.
 

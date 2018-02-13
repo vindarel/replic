@@ -2,6 +2,7 @@
   (:use :cl)
   (:shadow #:set)
   (:export :main
+           :confirm
            :repl
            :init-completions
            :functions-to-commands
@@ -153,12 +154,16 @@
     (when list-or-function
       (cond
         ((symbolp list-or-function)
-         ;; with a list of strings.
+         ;; with a variable referencing a list of strings.
          (complete-from-list text (symbol-value list-or-function)))
 
         ((functionp list-or-function)
          ;; with a function that returns a list of strings.
-         (complete-from-list text (funcall list-or-function)))))))
+         (complete-from-list text (funcall list-or-function)))
+
+        ;; can be a list (consp).
+        (t
+         (complete-from-list text list-or-function))))))
 
 (defun custom-complete (text start end)
   "Complete a symbol.
@@ -235,7 +240,6 @@
             (when (confirm)
               (uiop:quit)))
 
-        (format t "commands: ~a~%variables: ~a~%" *commands* *variables*)
         (unless (str:blank? text)
           (setf verb (first (str:words text)))
           (setf function (if (member verb *commands* :test 'equal)
