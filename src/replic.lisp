@@ -212,11 +212,11 @@
           '("y" "Y" "")
           :test 'equal))
 
-(defun repl (&key (custom-complete *custom-complete*))
+(defun repl ()
   (in-package :replic) ;; needed for executable
 
   ;; register completion
-  (rl:register-function :complete custom-complete)
+  (rl:register-function :complete #'custom-complete)
 
   (handler-case
       (do ((i 0 (1+ i))

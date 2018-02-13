@@ -156,13 +156,6 @@ You can read the help of a specific command or variable (with completion):
 
 That's it. You didn't have to write the REPL.
 
-You can give the repl your own completion function:
-
-#+BEGIN_SRC lisp
-(replic:repl :custom-complete #'my-custom-complete))
-#+END_SRC
-
-
 *** Variables
 
  - =*prompt*= (str):  the readline prompt.  Defaults to just  => =. Can
