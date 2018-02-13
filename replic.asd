@@ -15,7 +15,8 @@
                 :components
                 ((:file "replic")
                  (:file "help")
-                 (:file "utils"))))
+                 (:file "utils")
+                 (:file "base"))))
 
   :build-operation "program-op"
   :build-pathname "replic"

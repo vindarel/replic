@@ -141,6 +141,13 @@ Change the prompt. It defaults to "> ". It can contain ansi colours.
 (setf replic:*prompt* (cl-ansi-text:green "replic > "))
 #+END_SRC
 
+If  you want  to  have the  base commands  (=help=,  =reload= and  the
+example =hello=, =goodbye= and =vim=):
+
+#+BEGIN_SRC lisp
+(replic:functions-to-commands :replic.base)
+#+END_SRC
+
 Define how to complete your commands:
 
 #+BEGIN_SRC lisp

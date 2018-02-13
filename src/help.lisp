@@ -1,6 +1,6 @@
 (in-package :replic)
 
-;; Some functions arounds printing the help.
+;; Some functions around printing the help.
 
 (defun help-completion ()
   "Return a list of strings, strings that will be completion candidates."

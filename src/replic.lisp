@@ -334,8 +334,7 @@
           (init-completions)
 
           ;; create commands from the exported functions and variables.
-          (functions-to-commands :replic)
-          (functions-to-commands :replic.user)
+          (functions-to-commands :replic.base)
 
           ;; launch the repl.
           (repl))
