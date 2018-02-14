@@ -11,26 +11,41 @@
   "Write txt with an underline."
   (format stream "~&~a~%~a~%" txt (str:repeat (length txt) "=")))
 
-(defun format-help (name function-or-variable)
-  "Format a line of help (with right justification etc)."
-  (format t "~10a~t...~a~&" name (documentation (find-symbol (string-upcase name)) function-or-variable)))
+(defun format-help (name function-or-variable &key short)
+  "Format a line of help (with right justification etc).
+   If `short` is t, print only the first sentence (for the overview).
+  "
+  (let* ((doc (documentation (find-symbol (string-upcase name)) function-or-variable))
+         (doc (if short
+                  (first (cl-ppcre:split "\\n\\n" doc))
+                  doc)))
+    (format t "~10a~t... ~a~&" name doc)))
 
 (defun help-all ()
   "Print all the help."
-  (when *help-preamble*
+  ;; Preamble.
+  (unless (str:blank? *help-preamble*)
     (format-code *help-preamble*)
     (format t "~%~%"))
+
+  ;; Help.
   (format-h1 "Available commands")
   (mapcar (lambda (it)
             ;; xxx justify text
-            (format-help it 'function))
+            (format-help it 'function :short t))
           (sort *commands* #'string<))
   (terpri)
+
   (format-h1 "Available variables")
   (mapcar (lambda (it)
             ;; xxx justify text
-            (format-help it 'variable))
-          (sort *variables* #'string<)))
+            (format-help it 'variable :short t))
+          (sort *variables* #'string<))
+
+  ;; Postamble.
+  (unless (str:blank? *help-postamble*)
+    (terpri)
+    (format t "~a~&" *help-postamble*)))
 
 (defun help-arg (arg)
   "Print the documentation of this command or variable."
@@ -40,9 +55,13 @@
     (format-help arg 'variable)))
 
 (defun help (&optional arg)
-  "Print the help of all available commands. If given an argument, print its documentation."
+  "Print the help of all available commands. If given an argument, print its documentation.
+   Print the first sentence of each command, or print the full text for a particular command.
+
+   Example:
+   help help
+  "
   ;; possible: show arguments list (swank-backend:arglist), color markdown,
-  ;; preamble, postamble,...
   ;; xxx the 10 padding should adapt to the largest command.
   (if arg
       (help-arg arg)

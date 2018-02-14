@@ -3,8 +3,8 @@
 Building a  readline application is  cool, but readline gives  you the
 basics  and you  must still  build  a REPL  around it:  loop and  read
 commands, catch a =C-c=, a =C-d=,  ask confirmation to quit, print the
-help,  setup  completions,  load  an init  file,  colorize  output,...
-=replic= does this for you.
+general help, help of a command, setup completions, load an init file,
+colorize output,...  =replic= does this for you.
 
 You can use =replic= as a ready-to-use executable or as a library.
 
@@ -60,6 +60,7 @@ run:
 and
 
 : help
+: help help
 
 
 ** The executable and the init file
@@ -127,7 +128,7 @@ Available variables
 *verbose*  ... Example setting.
 #+END_EXPORT
 
-Write a preamble in =*help-preamble*=.
+Write a preamble and a postamble in =*help-preamble*= and =*help-postamble*=.
 
 You can read the help of a specific command or variable (with completion):
 
@@ -152,7 +153,7 @@ Define how to complete your commands:
 
 #+BEGIN_SRC lisp
 (push '("goodbye" . *names*) *args-completions*)
-(push  (cons "help" #'help-completion) *args-completions*)
+(push  (cons "help" #'replic::help-completion) replic:*args-completions*)
 #+END_SRC
 
 You can  use a  list, a variable  containing a list  of strings,  or a
@@ -178,8 +179,12 @@ That's it. You didn't have to write the REPL.
 
 *** Variables
 
- - =*prompt*= (str):  the readline prompt.  Defaults to just  => =. Can
+ - =*prompt*= (str):  the readline prompt.  Defaults to simply  => =. Can
    contain ansi colours (use =cl-ansi-text:green= for example).
+
+ - =*help-preamble*=: text to display at the beginning of the help.
+
+ - =*help-postamble*=: text to display last.
 
 *** Other helpers
 

@@ -101,8 +101,11 @@
 ;;   ;; http://quickutil.org/lists/
 ;;   (cdr (assoc key alist :test test)))
 
-(defparameter *help-preamble* nil
+(defparameter *help-preamble* ""
   "Text to display before the list of commands and variables.")
+
+(defparameter *help-postamble* "For details, see the help of each command or variable."
+  "Text to display after the list of commands and variables.")
 
 (defun init-completions ()
   (push '("goodbye" . *names*) *args-completions*)
