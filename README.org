@@ -193,6 +193,25 @@ That's it. You didn't have to write the REPL.
   display with ansi colours. Needs [[http://pygments.org][pygments]], or
   does nothing.
 
+** Readline settings
+
+The [[https://tiswww.case.edu/php/chet/readline/readline.html][GNU  Readline]] library provides  settings you might  take advantage
+of. We can set the settings in the [[https://tiswww.case.edu/php/chet/readline/readline.html#SEC9][readline init file]] (=~/.inputrc= by
+default, obeys the =INPUTRC= environment variable).
+
+For example, you can change the *completion behavior*. This:
+
+: TAB: menu-complete
+
+inserts  the  first completion  candidate,  even  if there  are  many,
+instead of showing the list of choices under the prompt.
+
+If you prefer *vi mode*:
+
+: set editing-mode vi
+
+etc. See readline's documentation.
+
 ** How it works
 
 A generalization on =cl-readline=.
