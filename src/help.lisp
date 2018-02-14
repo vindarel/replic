@@ -13,9 +13,11 @@
 
 (defun format-help (name function-or-variable &key short)
   "Format a line of help (with right justification etc).
-   If `short` is t, print only the first sentence (for the overview).
+   If `short` is t, print only the first paragraph denoted by two newline charaters (for the overview).
   "
-  (let* ((doc (documentation (find-symbol (string-upcase name)) function-or-variable))
+  ;; usage: (find-symbol "HELLO" :replic.base)
+  (let* ((doc (documentation (find-symbol (string-upcase name) (assoc-value *commands-package* name :test #'equal))
+                             function-or-variable))
          (doc (if short
                   (first (cl-ppcre:split "\\n\\n" doc))
                   doc)))

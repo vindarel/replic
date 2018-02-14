@@ -1,6 +1,9 @@
 (defpackage replic
   (:use :cl)
   (:shadow #:set)
+  (:import-from :alexandria
+                :curry
+                :assoc-value)
   (:export :main
            :confirm
            :repl
@@ -19,7 +22,8 @@
            :*custom-complete*
            :*default-command-completion*
            :*prompt*
-           :*verbose*))
+           :*verbose*
+           :*user-package*))
 
 ;; The package to be used in the user's init files.
 (defpackage replic.user
@@ -140,7 +144,7 @@
 
 (defun complete-from-list (text list)
   "Select all commands from `list' that start with `text'."
-  (let ((els (remove-if-not (alexandria:curry #'str:starts-with? text)
+  (let ((els (remove-if-not (curry #'str:starts-with? text)
                             list)))
     (if (cdr els)
         (cons (common-prefix els) els)
@@ -152,7 +156,7 @@
    Take the list of completion candidates from the `*args-completions*` alist."
   (let* ((verb (first (str:words line)))
          (list-or-function (or
-                            (alexandria:assoc-value *args-completions* verb :test 'equal)
+                            (assoc-value *args-completions* verb :test 'equal)
                             *default-command-completion*)))
     (when list-or-function
       (cond
@@ -196,11 +200,19 @@
 (defparameter *variables* '()
   "List of parameters (str), setable with `set`.")
 
+(defparameter *commands-package* '()
+  "Association of a command and its package (symbol).
+
+  Used to find it, read its documentation, etc. Use find-package to
+  get the package object.")
+
 (defun functions-to-commands (&optional (package *user-package*))
   "Add exported functions of `*package*` to the list of `*commands*` to complete,
    add exported variables to the list of `set`-able variables.
 
-   Remove any symbol named 'main'.
+   `*user-package*` is a symbol.
+
+   Remove any command named 'main'.
 
   "
   (assert (symbolp package))
@@ -208,7 +220,10 @@
   (do-external-symbols (it package)
     (if (str:starts-with? "*" (string it))
         (push (string-downcase (string it)) *variables*)
-        (push (string-downcase (string it)) *commands*)))
+        (push (string-downcase (string it)) *commands*))
+    ;; Remember what package this function/variable comes from (specially to get its help).
+    ;; xxx use an interface.
+    (push (cons (string-downcase (string it)) package) *commands-package*))
   (values
    (setf *commands* (remove "main" *commands* :test 'equal))
    *variables*)
@@ -248,10 +263,10 @@
           (setf function (if (member verb *commands* :test 'equal)
                              ;; might do better than this or.
                              (or (find-symbol (string-upcase verb))
-                                 (find-symbol (string-upcase verb) *user-package*))))
+                                 (find-symbol (string-upcase verb) (assoc-value *commands-package* verb :test #'equal)))))
           (setf variable (if (member verb *variables* :test 'equal)
                              (or (find-symbol (string-upcase verb))
-                                 (find-symbol (string-upcase verb) *user-package*))))
+                                 (find-symbol (string-upcase verb) (assoc-value *commands-package* verb :test #'equal)))))
           (setf args (rest (str:words text)))
 
 
