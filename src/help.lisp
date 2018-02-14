@@ -35,14 +35,15 @@
   (mapcar (lambda (it)
             ;; xxx justify text
             (format-help it 'function :short t))
-          (sort *commands* #'string<))
+          ;; sort is destructive and IS harmful !
+          (sort (copy-seq *commands*) #'string<))
   (terpri)
 
   (format-h1 "Available variables")
   (mapcar (lambda (it)
             ;; xxx justify text
             (format-help it 'variable :short t))
-          (sort *variables* #'string<))
+          (sort (copy-seq *variables*) #'string<))
 
   ;; Postamble.
   (unless (str:blank? *help-postamble*)
