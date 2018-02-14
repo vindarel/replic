@@ -262,11 +262,9 @@
           (setf verb (first (str:words text)))
           (setf function (if (member verb *commands* :test 'equal)
                              ;; might do better than this or.
-                             (or (find-symbol (string-upcase verb))
-                                 (find-symbol (string-upcase verb) (assoc-value *commands-package* verb :test #'equal)))))
+                             (find-symbol (string-upcase verb) (assoc-value *commands-package* verb :test #'equal))))
           (setf variable (if (member verb *variables* :test 'equal)
-                             (or (find-symbol (string-upcase verb))
-                                 (find-symbol (string-upcase verb) (assoc-value *commands-package* verb :test #'equal)))))
+                             (find-symbol (string-upcase verb) (assoc-value *commands-package* verb :test #'equal))))
           (setf args (rest (str:words text)))
 
 
