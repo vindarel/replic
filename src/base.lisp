@@ -10,6 +10,7 @@
                 :hello
                 :goodbye
                 :vim
+                :sleep3
                 :*verbose*)
   (:shadowing-import-from :replic
                           :set)
@@ -19,4 +20,5 @@
            :goodbye
            :hello
            :vim
+           :sleep3
            :*verbose*))

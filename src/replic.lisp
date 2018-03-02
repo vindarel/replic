@@ -17,6 +17,7 @@
            :hello
            :echo
            :vim
+           :sleep3
            :*args-completions*
            :*commands*
            :*custom-complete*
@@ -89,6 +90,9 @@
 (defun complete-hello ()
   ;; todo
   '("john" "maria"))
+
+(defun sleep3 ()
+  (sleep 3))
 
 (defun vim ()
   "Run vim."
@@ -271,6 +275,9 @@
           (if (and verb function)
               (handler-case
                   (apply function args)
+                (#+sbcl sb-sys:interactive-interrupt (c)
+                        (declare (ignore c))
+                        (terpri))
                 (error (c) (format t "Error: ~a~&" c)))
 
               (if variable
