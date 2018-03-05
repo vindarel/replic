@@ -18,10 +18,12 @@
            :echo
            :vim
            :sleep3
+           ;; settings
            :*args-completions*
            :*commands*
            :*custom-complete*
            :*default-command-completion*
+           :*highlight-words*
            :*prompt*
            :*verbose*
            :*user-package*))
@@ -65,6 +67,9 @@
   "The package that contains the symbols (functions and variables) we
   want to create the repl for. Defaults to replic.user. Changed by
   `functions-to-commands`.")
+
+(defparameter *highlight-words* nil
+  "A list of words to highlight in standard output.")
 
 ;;
 ;; Examples
@@ -239,6 +244,15 @@
           '("y" "Y" "")
           :test 'equal))
 
+(defun print-results (input &key (stream t))
+  "Print the given results string, apply transformations if needed (highlight text)."
+  (assert (stringp input))
+  (loop for word in *highlight-words*
+     do (setf input (str:replace-all word
+                                     (cl-ansi-text:yellow word)
+                                     input)))
+  (format stream "~&~a~&" input))
+
 (defun repl ()
   (in-package :replic) ;; needed for executable
 
@@ -251,7 +265,8 @@
            (verb "")
            (function nil)
            (variable nil)
-           (args ""))
+           (args "")
+           (standard-output ""))
           ((string= "quit" (str:trim text)))
         (setf text
               (rl:readline :prompt *prompt*
@@ -274,7 +289,13 @@
 
           (if (and verb function)
               (handler-case
-                  (apply function args)
+                  ;; Call the function.
+                  ;; Capture standard output in order to post-process it (highlight stuff).
+                  (progn
+                    (let ((*standard-output* (make-string-output-stream)))
+                      (apply function args)
+                      (setf standard-output (get-output-stream-string *standard-output*)))
+                    (print-results standard-output))
                 (#+sbcl sb-sys:interactive-interrupt (c)
                         (declare (ignore c))
                         (terpri))

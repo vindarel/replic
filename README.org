@@ -39,10 +39,10 @@ What this is *not*:
 
 ** Installation
 
-Not in Quicklisp, clone into =~/quicklisp/local-projects/=.
+Either download the executable, or clone this repo into =~/quicklisp/local-projects/=.
 
 
-Build the executable with =make build=.
+Then build the executable with =make build=.
 
 : replic -h
 
@@ -177,7 +177,7 @@ Start the repl:
 
 That's it. You didn't have to write the REPL.
 
-*** Variables
+*** Settings
 
  - =*prompt*= (str):  the readline prompt.  Defaults to simply  => =. Can
    contain ansi colours (use =cl-ansi-text:green= for example).
@@ -185,6 +185,9 @@ That's it. You didn't have to write the REPL.
  - =*help-preamble*=: text to display at the beginning of the help.
 
  - =*help-postamble*=: text to display last.
+
+ - =*highlight-words*=:  list  of  words  (strings)  to  capture  from
+   standard output and highlight (in yellow).
 
 *** Other helpers
 
