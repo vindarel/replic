@@ -215,9 +215,24 @@ If you prefer *vi mode*:
 
 etc. See readline's documentation.
 
-** How it works
+** Dev
 
-A generalization on =cl-readline=.
+A  generalization on  =cl-readline=. See  also the  simple [[https://github.com/vindarel/cl-readline-example][cl-readline
+example]].  Once you've  built two even basic readline  apps you'll want
+to factorize the common parts.
+
+Clone this repo in QL's local projects (=~/quicklisp/local-projects=).
+
+Build the executable:
+
+: make build
+
+*** Develop and test interactively into the console
+
+By starting a swank server in the (real) Lisp repl we can compile code
+in our editor  and try instantly in the  terminal, without re-building
+the executable. See this [[http://turtleware.eu/posts/cl-charms-crash-course.html][cl-charms  crash course]] for now. Some details
+need fixing.
 
 
 ** Resources
