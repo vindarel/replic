@@ -15,6 +15,7 @@
                 :components
                 ((:file "replic")
                  (:file "help")
+                 (:file "highlight")
                  (:file "utils")
                  (:file "base"))))
 
