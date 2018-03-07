@@ -117,6 +117,7 @@ duckduckgo ... NIL
 echo       ... Print the rest of the line. Takes any number of arguments.
 hello      ... Takes only one argument. Adds the given name to the global
   `*names*` global variable, used to complete arguments of `goodbye`.
+highlight  ... Highlight the given words.
 goodbye    ... Says goodbye to name, where `name` should be completed from what was given to `hello`.
 help       ... Print the help of all available commands.
 reload     ... NIL
@@ -190,6 +191,10 @@ That's it. You didn't have to write the REPL.
 
 We can define a list of words to highlight everytime they are printing
 on standard output.
+
+Use the =highlight= and =unhighlight= commands in the REPL.
+
+Set the following variables in the init file:
 
  - =*highlight-words*=: list of words  to capture from standard output
    and highlight (in yellow by default).

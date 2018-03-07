@@ -8,6 +8,8 @@
                 :help
                 :reload
                 :hello
+                :highlight
+                :unhighlight
                 :goodbye
                 :vim
                 :sleep3
@@ -21,4 +23,6 @@
            :hello
            :vim
            :sleep3
-           :*verbose*))
+           :*verbose*
+           :highlight
+           :unhighlight))
