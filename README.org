@@ -186,8 +186,20 @@ That's it. You didn't have to write the REPL.
 
  - =*help-postamble*=: text to display last.
 
- - =*highlight-words*=:  list  of  words  (strings)  to  capture  from
-   standard output and highlight (in yellow).
+**** Highlighting
+
+We can define a list of words to highlight everytime they are printing
+on standard output.
+
+ - =*highlight-words*=: list of words  to capture from standard output
+   and highlight (in yellow by default).
+
+ - =*highlight*=: boolean, enable or disable the feature.
+
+- =*highlight-default-color*=: default color  for highlighting. Symbol
+  of the =*colors*= list.  Defaults  to =:yellow=. Choices are =:black
+  :red   :green   :yellow   :blue   :magenta   :cyan   :white=   (from
+  =cl-ansi-text=).
 
 *** Other helpers
 

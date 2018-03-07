@@ -23,6 +23,7 @@
            :*commands*
            :*custom-complete*
            :*default-command-completion*
+           :*highlight*
            :*highlight-words*
            :*prompt*
            :*verbose*
@@ -68,8 +69,32 @@
   want to create the repl for. Defaults to replic.user. Changed by
   `functions-to-commands`.")
 
+;;
+;; Highlight / colorize words on output.
+;;
+(defparameter *highlight* t
+  "If true, highlight words of *highlight-words* on standard output. Defaults to true.")
+
 (defparameter *highlight-words* nil
   "A list of words to highlight in standard output.")
+
+(defparameter *highlight-default-color* :yellow
+  "Default color for highlighting. Symbol of the *colors* list. Defaults to yellow.")
+
+(defparameter *colors* '(:black :red :green :yellow :blue :magenta :cyan :white)
+  "List of color symbols available for text highlighting. From cl-ansi-text.")
+
+(defparameter *colors-functions* '(
+                                   (:blue . cl-ansi-text:blue)
+                                   (:green . cl-ansi-text:green)
+                                   (:yellow . cl-ansi-text:yellow)
+                                   (:cyan . cl-ansi-text:cyan)
+                                   (:magenta . cl-ansi-text:magenta)
+                                   (:red . cl-ansi-text:red))
+  "Alist of a symbol - its function to colorize text. From cl-ansi-text.")
+
+(defparameter *highlight-default-style :foreground
+  "Default cl-ansi-text style, :foreground (or :background) (a yellow background isn't always readable).")
 
 ;;
 ;; Examples
@@ -244,13 +269,34 @@
           '("y" "Y" "")
           :test 'equal))
 
+(defun get-color-fn (name)
+  "Return a color function from a color name (a symbol)."
+  (let ((fun (assoc-value *colors-functions* name :test #'equal)))
+    (unless fun
+      ;; ~( ~) = lower string, ~{ ~} = print each element of a list.
+      (format *error-output* "~&Color ~(:~a~) is not a valid color name. Choices are ~{~(:~a~) ~}" name *colors*)
+      (setf fun (assoc-value *colors-functions* *highlight-default-color* :test #'equal)))
+    fun))
+
+(defun highlight-input (input &key (color *highlight-default-color*))
+  "Highlight words from *highlight-words* in the given input text (str), only if *highlight* is true.
+  Return a string."
+  (when *highlight*
+    (let ((color (or (find color *colors*)
+                     *highlight-default-color*))
+          (colorize (get-color-fn color)))
+      (print color)
+      (print (cl-ansi-text:with-color (color) (print "rst")))
+      (loop for word in *highlight-words*
+         do (setf input (str:replace-all word
+                                         (funcall colorize word)
+                                         input)))))
+  input)
+
 (defun print-results (input &key (stream t))
   "Print the given results string, apply transformations if needed (highlight text)."
   (assert (stringp input))
-  (loop for word in *highlight-words*
-     do (setf input (str:replace-all word
-                                     (cl-ansi-text:yellow word)
-                                     input)))
+  (setf input (highlight-input input))
   (format stream "~&~a~&" input))
 
 (defun repl ()
