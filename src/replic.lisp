@@ -26,8 +26,7 @@
            :*highlight*
            :*highlight-words*
            :*prompt*
-           :*verbose*
-           :*user-package*))
+           :*verbose*))
 
 ;; The package to be used in the user's init files.
 (defpackage replic.user
@@ -63,11 +62,6 @@
 
 (defparameter *default-command-completion* nil
   "A variable, list or function to use to complete all commands that don't have an associated completion method.")
-
-(defparameter *user-package* :replic.user
-  "The package that contains the symbols (functions and variables) we
-  want to create the repl for. Defaults to replic.user. Changed by
-  `functions-to-commands`.")
 
 ;;
 ;; Highlight / colorize words on output.
@@ -240,17 +234,14 @@
   Used to find it, read its documentation, etc. Use find-package to
   get the package object.")
 
-(defun functions-to-commands (&optional (package *user-package*))
+(defun functions-to-commands (&optional package)
   "Add exported functions of `*package*` to the list of `*commands*` to complete,
    add exported variables to the list of `set`-able variables.
-
-   `*user-package*` is a symbol.
 
    Remove any command named 'main'.
 
   "
   (assert (symbolp package))
-  (setf *user-package* package)
   (do-external-symbols (it package)
     (if (str:starts-with? "*" (string it))
         (push (string-downcase (string it)) *variables*)
