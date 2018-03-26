@@ -92,10 +92,6 @@
     (format t "[lo]g - verbose is ~a~&" *verbose*))
   (format t "goodbye ~a~&" name))
 
-(defun complete-hello ()
-  ;; todo
-  '("john" "maria"))
-
 (defun sleep3 ()
   (sleep 3))
 

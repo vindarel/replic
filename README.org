@@ -110,8 +110,7 @@ Associate a function name with a list of completion candidates or a
 function, add it to the =*args-completions*= alist:
 
 #+BEGIN_SRC lisp
-(push '("goodbye" . *names*) *args-completions*)
-(push (cons "hello" #'complete-hello) *args-completions*)
+(replic.completion:add-completion "goodbye" (lambda () *names*))
 #+END_SRC
 
 =complete-hello= must return a list of strings.
