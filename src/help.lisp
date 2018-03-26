@@ -5,7 +5,7 @@
 (defun help-completion ()
   "Return a list of strings, strings that will be completion candidates."
   ;; used in init-completions
-  (append *commands* *variables*))
+  (append (replic.completion:commands) (replic.completion:variables)))
 
 (defun format-h1 (txt &key (stream *standard-output*))
   "Write txt with an underline."
@@ -16,7 +16,7 @@
    If `short` is t, print only the first paragraph denoted by two newline charaters (for the overview).
   "
   ;; usage: (find-symbol "HELLO" :replic.base)
-  (let* ((doc (documentation (find-symbol (string-upcase name) (assoc-value *commands-package* name :test #'equal))
+  (let* ((doc (documentation (replic.completion:get-package name)
                              function-or-variable))
          (doc (if short
                   (first (cl-ppcre:split "\\n\\n" doc))
@@ -36,14 +36,14 @@
             ;; xxx justify text
             (format-help it 'function :short t))
           ;; sort is destructive and IS harmful !
-          (sort (copy-seq *commands*) #'string<))
+          (sort (copy-seq (replic.completion:commands)) #'string<))
   (terpri)
 
   (format-h1 "Available variables")
   (mapcar (lambda (it)
             ;; xxx justify text
             (format-help it 'variable :short t))
-          (sort (copy-seq *variables*) #'string<))
+          (sort (copy-seq (replic.completion:variables)) #'string<))
 
   ;; Postamble.
   (unless (str:blank? *help-postamble*)
@@ -52,9 +52,9 @@
 
 (defun help-arg (arg)
   "Print the documentation of this command or variable."
-  (when (member arg *commands* :test #'equal)
+  (when (replic.completion:is-function arg)
     (format-help arg 'function))
-  (when (member arg *variables* :test #'equal)
+  (when (replic.completion:is-variable arg)
     (format-help arg 'variable)))
 
 (defun help (&optional arg)

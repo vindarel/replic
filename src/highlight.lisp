@@ -14,7 +14,7 @@
   Return a string."
   (when *highlight*
     (let* ((color (or (find color *colors*)
-                     *highlight-default-color*))
+                      *highlight-default-color*))
            (colorize (get-color-fn color)))
       (loop for word in *highlight-words*
          do (setf input (str:replace-all word
@@ -25,8 +25,10 @@
 
 (defun highlight (word &rest words)
   ;; readline command.
-  "Highlight the given words. For this session only,
-  use your ~/.replic.lisp to set them permanently."
+  "Highlight the given words.
+
+  For this session only, use your ~/.replic.lisp to set them
+  permanently."
   (format t "let's highlight ~{~a ~} in ~(~a~)" (cons word words) *highlight-default-color*)
   (setf *highlight-words* (append *highlight-words* (cons word words))))
 

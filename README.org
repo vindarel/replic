@@ -73,10 +73,23 @@ Your =.replic.lisp= looks like this:
 #+BEGIN_SRC lisp
 (in-package :replic.user)
 
-(defun duckduckgo (&rest words)
-  (format t "searching for ~a...~&" words))
+(defparameter *names* '()
+  "List of names (string) given to `hello`. Will be autocompleted by `goodbye`.")
 
-(export '(duckduckgo))
+(defun hello (name)
+  "Takes only one argument. Adds the given name to the global
+  `*names*` global variable, used to complete arguments of `goodbye`.
+  "
+  (format t "hello ~a~&" name)
+  (push name *names*))
+
+(defun goodbye (name)
+  "Says goodbye to name, where `name` should be completed from what was given to `hello`."
+  (format t "goodbye ~a~&" name))
+
+(replic.completion:add-completion "goodbye" (lambda () *names*))
+
+(export '(hello goodbye))
 #+END_SRC
 
 
@@ -103,7 +116,7 @@ function, add it to the =*args-completions*= alist:
 
 =complete-hello= must return a list of strings.
 
-*** Builtin help
+*** Built-in commands
 
 You get a built-in =help= command that shows the documentation of
 functions and variables:
@@ -237,6 +250,13 @@ etc. See readline's documentation.
 A  generalization on  =cl-readline=. See  also the  simple [[https://github.com/vindarel/cl-readline-example][cl-readline
 example]].  Once you've  built two even basic readline  apps you'll want
 to factorize the common parts.
+
+We want to store a list of commands (functions, "verbs") and a list of
+variables (the ones to use with "set").  We want to read them from any
+Lisp file, hence we need to remember the package they come from. These
+lists and alist  are manipulated through an interface  hiding the data
+structures (likely to change, too tedious  and error prone for a final
+user) in =completion.lisp=.
 
 Clone this repo in QL's local projects (=~/quicklisp/local-projects=).
 

@@ -19,8 +19,6 @@
            :vim
            :sleep3
            ;; settings
-           :*args-completions*
-           :*commands*
            :*custom-complete*
            :*default-command-completion*
            :*highlight*
@@ -42,23 +40,6 @@
 
 (defparameter *prompt* "> "
   "The prompt. Can contain ansi colours (use cl-ansi-text:green etc).")
-
-(defparameter *commands* '()
-  "List of commands for the REPL.")
-
-(defparameter *args-completions* '()
-  "Alist that associates a command name (verb) to:
-
-  a) either a list of strings,
-
-  b) either a function returning the completion candidates. This
-  function takes the partially entered argument as argument.
-
-  Example usage:
-
-  (push '(\"goodbye\" . *names*) *args-completions*)
-
-  ")
 
 (defparameter *default-command-completion* nil
   "A variable, list or function to use to complete all commands that don't have an associated completion method.")
@@ -140,9 +121,10 @@
   "Text to display after the list of commands and variables.")
 
 (defun init-completions ()
-  (push '("goodbye" . *names*) *args-completions*)
-  (push '("set" . *variables*) *args-completions*)
-  (push  (cons "help" #'help-completion) *args-completions*))
+  ;TODO: to test !
+  (replic.completion:add-completion "goodbye" (lambda () *names*))
+  (replic.completion:add-completion "set" (replic.completion:variables))
+  (replic.completion:add-completion "help" #'help-completion))
 
 (defun echo (string &rest more)
   "Print the rest of the line. Takes any number of arguments."
@@ -179,40 +161,25 @@
         els)))
 
 (defun complete-args (text line)
-  "Completion for arguments.
-
-   Take the list of completion candidates from the `*args-completions*` alist."
+  "Completion for arguments."
   (let* ((verb (first (str:words line)))
-         (list-or-function (or
-                            (assoc-value *args-completions* verb :test 'equal)
-                            *default-command-completion*)))
-    (when list-or-function
-      (cond
-        ((symbolp list-or-function)
-         ;; with a variable referencing a list of strings.
-         (complete-from-list text (symbol-value list-or-function)))
-
-        ((functionp list-or-function)
-         ;; with a function that returns a list of strings.
-         (complete-from-list text (funcall list-or-function)))
-
-        ;; can be a list (consp).
-        (t
-         (complete-from-list text list-or-function))))))
+         (candidates (replic.completion:candidates verb)))
+    (when candidates
+      (complete-from-list text candidates))))
 
 (defun custom-complete (text start end)
   "Complete a symbol.
 
-  text is the partially entered word. start and end are the position on `rl:*line-buffer*'.
+  `text` is the partially entered word. start and end are the position on `rl:*line-buffer*'.
 
-  When the cursor is at the beginning of the prompt, complete from `*commands*`.
-
+  When the cursor is at the beginning of the prompt, complete from commands.
+  When `text` starts with `*`, complete from variables.
   "
   (declare (ignore end))
   (if (zerop start)
       (if (str:starts-with? "*" text)
-          (complete-from-list text *variables*)
-          (complete-from-list text *commands*))
+          (complete-from-list text (replic.completion:variables))
+          (complete-from-list text (replic.completion:commands)))
       (complete-args text rl:*line-buffer*)))
 
 (defparameter *custom-complete* #'custom-complete
@@ -225,17 +192,9 @@
    Afterwards, it reads how to complete the function/variable
    arguments from `complete-args`.")
 
-(defparameter *variables* '()
-  "List of parameters (str), setable with `set`.")
 
-(defparameter *commands-package* '()
-  "Association of a command and its package (symbol).
-
-  Used to find it, read its documentation, etc. Use find-package to
-  get the package object.")
-
-(defun functions-to-commands (&optional package)
-  "Add exported functions of `*package*` to the list of `*commands*` to complete,
+(defun functions-to-commands (&optional (package :replic.base))
+  "Add exported functions of `package` to the list of commands to complete,
    add exported variables to the list of `set`-able variables.
 
    Remove any command named 'main'.
@@ -243,15 +202,13 @@
   "
   (assert (symbolp package))
   (do-external-symbols (it package)
-    (if (str:starts-with? "*" (string it))
-        (push (string-downcase (string it)) *variables*)
-        (push (string-downcase (string it)) *commands*))
-    ;; Remember what package this function/variable comes from (specially to get its help).
-    ;; xxx use an interface.
-    (push (cons (string-downcase (string it)) package) *commands-package*))
+    (unless (equal :MAIN it)
+      (if (str:starts-with? "*" (string it))
+          (replic.completion:add-variable it package)
+          (replic.completion:add-command it package))))
   (values
-   (setf *commands* (remove "main" *commands* :test 'equal))
-   *variables*)
+   (replic.completion:commands)
+   (replic.completion:variables))
   )
 
 (defun confirm ()
@@ -293,11 +250,11 @@
 
         (unless (str:blank? text)
           (setf verb (first (str:words text)))
-          (setf function (if (member verb *commands* :test 'equal)
+          (setf function (if (replic.completion:is-function verb)
                              ;; might do better than this or.
-                             (find-symbol (string-upcase verb) (assoc-value *commands-package* verb :test #'equal))))
-          (setf variable (if (member verb *variables* :test 'equal)
-                             (find-symbol (string-upcase verb) (assoc-value *commands-package* verb :test #'equal))))
+                             (replic.completion:get-function verb)))
+          (setf variable (if (replic.completion:is-variable verb)
+                             (replic.completion:get-variable verb)))
           (setf args (rest (str:words text)))
 
 
@@ -388,11 +345,11 @@
 
           (setf *prompt* (cl-ansi-text:green "replic > "))
 
-          ;; replic initialization:
-          (init-completions)
-
           ;; create commands from the exported functions and variables.
           (functions-to-commands :replic.base)
+
+          ;; replic initialization:
+          (init-completions)
 
           ;; launch the repl.
           (repl))

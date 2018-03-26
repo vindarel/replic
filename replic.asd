@@ -3,7 +3,7 @@
 |#
 
 (asdf:defsystem "replic"
-  :version "0.1.0"
+  :version "0.3"
   :author "vindarel"
   :license "MIT"
   :depends-on (:cl-readline
@@ -13,7 +13,8 @@
                :unix-opts)
   :components ((:module "src"
                 :components
-                ((:file "replic")
+                ((:file "completion")
+                 (:file "replic")
                  (:file "help")
                  (:file "highlight")
                  (:file "utils")
