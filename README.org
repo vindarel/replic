@@ -115,6 +115,13 @@ function, add it to the =*args-completions*= alist:
 
 =complete-hello= must return a list of strings.
 
+When you have many functions that  should complete from the same list,
+you can set a default completion function:
+
+#+BEGIN_SRC lisp
+(replic.completion:*default-command-completion* #'my-function)
+#+END_SRC
+
 *** Built-in commands
 
 You get a built-in =help= command that shows the documentation of

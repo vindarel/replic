@@ -10,7 +10,8 @@
            :get-package
            :commands
            :variables
-           :candidates))
+           :candidates
+           :*default-command-completion*))
 
 (in-package :replic.completion)
 
@@ -25,6 +26,9 @@
 (defvar *packages* nil
   "Association of a verb or command and the package it comes from (so
    than we can call it!).")
+
+(defparameter *default-command-completion* nil
+  "A variable, list or function to use to complete all commands that don't have an associated completion method.")
 
 (defun commands ()
   "Return the list of available commands."
@@ -89,7 +93,8 @@
 ;; (defun get-completions (verb)
 (defun candidates (verb)
   "Return the completion candidates (list of strings) for this verb."
-  (let ((list-or-function (assoc-value *args-completions* verb :test 'equal)))
+  (let ((list-or-function (or (assoc-value *args-completions* verb :test 'equal)
+                              *default-command-completion*)))
     (cond
       ((functionp list-or-function)
        (funcall list-or-function))

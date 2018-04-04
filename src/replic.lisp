@@ -20,7 +20,6 @@
            :sleep3
            ;; settings
            :*custom-complete*
-           :*default-command-completion*
            :*highlight*
            :*highlight-words*
            :*prompt*
@@ -40,9 +39,6 @@
 
 (defparameter *prompt* "> "
   "The prompt. Can contain ansi colours (use cl-ansi-text:green etc).")
-
-(defparameter *default-command-completion* nil
-  "A variable, list or function to use to complete all commands that don't have an associated completion method.")
 
 ;;
 ;; Highlight / colorize words on output.
