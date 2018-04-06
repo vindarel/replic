@@ -231,9 +231,15 @@
            (args "")
            (standard-output ""))
           ((string= "quit" (str:trim text)))
-        (setf text
-              (rl:readline :prompt *prompt*
-                           :add-history t))
+
+        (handler-case
+            (setf text
+                  (rl:readline :prompt *prompt*
+                               :add-history t))
+          (#+sbcl sb-sys:interactive-interrupt ()
+                  (progn
+                    (when (confirm)
+                      (uiop:quit)))))
 
         (if (string= text "NIL")
             ;; that's a C-d, a blank input is just "".
@@ -270,10 +276,6 @@
 
           (finish-output)))
 
-    (#+sbcl sb-sys:interactive-interrupt
-      () (progn
-           (when (confirm)
-             (uiop:quit))))
     (error (c)
       (format t "~&Unknown error: ~&~a~&" c)))
   )
