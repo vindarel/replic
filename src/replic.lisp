@@ -342,6 +342,9 @@
           ;; create commands from the exported functions and variables.
           (functions-to-commands :replic.base)
 
+          ;; load commands from the .replic.lisp init file.
+          (functions-to-commands :replic.user)
+
           ;; replic initialization:
           (init-completions)
 
