@@ -33,6 +33,13 @@
 
 (replic.completion:add-completion "radio" *radios-names*)
 
+;; Add the list of radios to the command documentation
+;; so that it is visible by "help radio".
+;; Print a coma-separated list of radios, finished by a "and" and a point.
+;; thanks http://random-state.net/features-of-common-lisp.html#The_FORMAT_function
+(let ((doc (documentation #'replic.user:radio 'function)))
+  (setf (documentation #'replic.user:radio 'function) (format nil "~a~&~%The list of available radio streams is: ~a" doc (format nil "~{~a~#[.~; and ~:;, ~]~}" *radios-names*))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Run vim.
