@@ -92,6 +92,8 @@ Your =.replic.lisp= looks like this:
 (export '(hello goodbye))
 #+END_SRC
 
+See more examples in the =src/examples.lisp= file of this repository.
+
 
 *** Set variables
 
