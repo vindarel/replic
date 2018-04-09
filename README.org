@@ -9,20 +9,14 @@ colorize output,...  =replic= does this for you.
 You can use =replic= as a ready-to-use executable or as a library.
 
 Using  the executable,  you can  define functions  and variables  in
-=~/.replic.lisp= and they will be used as follows:
+=~/.replic.lisp=, give them completion candidates, and use them on the
+replic command line.
 
-- an =export='ed function becomes a command in the command line interface. You get
-    completion for functions  when your cursor is at  the beginning of
-  the prompt.
-- an =export='ed variable becomes a variable, which is =set='able in the repl
-    (=set= then comes with completion of variables).
-- you can define how to complete a function's arguments. Examples below.
+With the library you can automatically  build a
+REPL and turn functions you already have into commands in the readline prompt,
+with the process described below.
 
-=replic= is  also a library with  which you can automatically  build a
-REPL and  turn functions you already  have into commands in  the REPL,
-with the process described above.
-
-Basic examples below, more to come.
+There are a few examples below, in =src/examples.lisp= and expect more to come.
 
 This  is an  attempt at  generalizing what  I did  several times  with
 =cl-readline=.
@@ -92,6 +86,9 @@ Your =.replic.lisp= looks like this:
 (export '(hello goodbye))
 #+END_SRC
 
+Note that only the =export='ed  functions and parameters will be taken
+into account.
+
 See more examples in the =src/examples.lisp= file of this repository.
 
 
@@ -103,25 +100,26 @@ We kept the "earmuffs" to denote variables.
 
 We get completion on the variables list.
 
+The "t" and "nil" strings are  understood for their lisp meaning, true
+and false.
+
 
 *** Define custom completion for arguments
 
-Write a function or a variable, =export= it.
+Write a function or a variable and =export= it.
 
-Associate a function name with a list of completion candidates or a
-function, add it to the =*args-completions*= alist:
+You can associate a function name with a list of completion candidates (a list
+of strings) or a function:
 
 #+BEGIN_SRC lisp
 (replic.completion:add-completion "goodbye" (lambda () *names*))
 #+END_SRC
 
-=complete-hello= must return a list of strings.
-
 When you have many functions that  should complete from the same list,
 you can set a default completion function:
 
 #+BEGIN_SRC lisp
-(replic.completion:*default-command-completion* #'my-function)
+(setf replic.completion:*default-command-completion* #'my-function)
 #+END_SRC
 
 *** Built-in commands
@@ -129,12 +127,11 @@ you can set a default completion function:
 You get a built-in =help= command that shows the documentation of
 functions and variables:
 
-#+BEGIN_EXPORT ascii
+#+BEGIN_SRC text
 replic > help
 
 Available commands
 ==================
-duckduckgo ... NIL
 echo       ... Print the rest of the line. Takes any number of arguments.
 hello      ... Takes only one argument. Adds the given name to the global
   `*names*` global variable, used to complete arguments of `goodbye`.
@@ -148,7 +145,7 @@ vim        ... Run vim.
 Available variables
 ===================
 *verbose*  ... Example setting.
-#+END_EXPORT
+#+END_SRC
 
 Write a preamble and a postamble in =*help-preamble*= and =*help-postamble*=.
 
@@ -156,35 +153,23 @@ You can read the help of a specific command or variable (with completion):
 
 : help help
 
+The   general    =help=   shows    the   first   paragraph    of   the
+functions/parameters  docstring, the  =help  <cmd>=  function is  more
+complete and shows all of it.
+
 ** Using replic as a library with an existing system
 
-Change the prompt. It defaults to "> ". It can contain ansi colours.
+You can change the prompt. It defaults to "> ". It can contain ansi colours.
 
 #+BEGIN_SRC lisp
 (setf replic:*prompt* (cl-ansi-text:green "replic > "))
 #+END_SRC
 
 If  you want  to  have the  base commands  (=help=,  =reload= and  the
-example =hello=, =goodbye= and =vim=):
+example =hello=, =goodbye= and =vim= so far):
 
 #+BEGIN_SRC lisp
 (replic:functions-to-commands :replic.base)
-#+END_SRC
-
-Define how to complete your commands:
-
-#+BEGIN_SRC lisp
-(push '("goodbye" . *names*) *args-completions*)
-(push  (cons "help" #'replic::help-completion) replic:*args-completions*)
-#+END_SRC
-
-You can  use a  list, a variable  containing a list  of strings,  or a
-function returning a list of strings.
-
-You can set a default completion method for all other commands:
-
-#+BEGIN_SRC lisp
-(setf replic:*default-command-completion* #'function-that-returns-list-of-strings)
 #+END_SRC
 
 Create the commands from all the exported functions and variables (except "main").
@@ -199,6 +184,7 @@ Start the repl:
 
 That's it. You didn't have to write the REPL.
 
+
 *** Settings
 
  - =*prompt*= (str):  the readline prompt.  Defaults to simply  => =. Can
@@ -210,7 +196,7 @@ That's it. You didn't have to write the REPL.
 
 **** Highlighting
 
-We can define a list of words to highlight everytime they are printing
+We can define a list of words to highlight everytime they are printed
 on standard output.
 
 Use the =highlight= and =unhighlight= commands in the REPL.
@@ -255,16 +241,14 @@ etc. See readline's documentation.
 
 ** Dev
 
-A  generalization on  =cl-readline=. See  also the  simple [[https://github.com/vindarel/cl-readline-example][cl-readline
+This is a  generalization on  =cl-readline=. See  also the  simple [[https://github.com/vindarel/cl-readline-example][cl-readline
 example]].  Once you've  built two even basic readline  apps you'll want
 to factorize the common parts.
 
 We want to store a list of commands (functions, "verbs") and a list of
 variables (the ones to use with "set").  We want to read them from any
-Lisp file, hence we need to remember the package they come from. These
-lists and alist  are manipulated through an interface  hiding the data
-structures (likely to change, too tedious  and error prone for a final
-user) in =completion.lisp=.
+Lisp file, hence we need to remember the package they come from. This
+mechanism is provided through an interface in =completion.lisp=.
 
 Clone this repo in QL's local projects (=~/quicklisp/local-projects=).
 
