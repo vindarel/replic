@@ -9,6 +9,28 @@
   ;; Don't import Alexandria just for that.
   (cdr (assoc key alist :test test)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Demo examples.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun hello (name)
+  "Takes only one argument. Adds the given name to the global
+  `*names*` global variable, used to complete arguments of `goodbye`.
+  "
+  (format t "hello ~a~&" name)
+  (push name *names*))
+
+(defun goodbye (name)
+  "Says goodbye to name, where `name` should be completed from what was given to `hello`."
+  (when *verbose*
+    (format t "[lo]g - verbose is ~a~&" *verbose*))
+  (format t "goodbye ~a~&" name))
+
+(defun vim ()
+  "Run vim."
+  (uiop:run-program "vim"
+                    :output :interactive
+                    :input :interactive))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Listen to radios. Autocomplete their names.
@@ -37,8 +59,8 @@
 ;; so that it is visible by "help radio".
 ;; Print a coma-separated list of radios, finished by a "and" and a point.
 ;; thanks http://random-state.net/features-of-common-lisp.html#The_FORMAT_function
-(let ((doc (documentation #'replic.user:radio 'function)))
-  (setf (documentation #'replic.user:radio 'function) (format nil "~a~&~%The list of available radio streams is: ~a" doc (format nil "~{~a~#[.~; and ~:;, ~]~}" *radios-names*))))
+(let ((doc (documentation #'radio 'function)))
+  (setf (documentation #'radio 'function) (format nil "~a~&~%The list of available radio streams is: ~a" doc (format nil "~{~a~#[.~; and ~:;, ~]~}" *radios-names*))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

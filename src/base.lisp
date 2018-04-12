@@ -7,22 +7,14 @@
   (:import-from :replic
                 :help
                 :reload
-                :hello
                 :highlight
                 :unhighlight
-                :goodbye
-                :vim
-                :sleep3
                 :*verbose*)
   (:shadowing-import-from :replic
                           :set)
   (:export :help
            :set
            :reload
-           :goodbye
-           :hello
-           :vim
-           :sleep3
            :*verbose*
            :highlight
            :unhighlight))

@@ -12,12 +12,6 @@
            :help
            :set
            :reload
-           ;; examples:
-           :goodbye
-           :hello
-           :echo
-           :vim
-           :sleep3
            ;; settings
            :*custom-complete*
            :*highlight*
@@ -72,40 +66,6 @@
 ;;
 (defparameter *verbose* nil "Example setting.")
 
-(defparameter *names* '()
-  "List of names (string) given to `hello`. Will be autocompleted by `goodbye`.")
-
-(defun hello (name)
-  "Takes only one argument. Adds the given name to the global
-  `*names*` global variable, used to complete arguments of `goodbye`.
-  "
-  (format t "hello ~a~&" name)
-  (push name *names*))
-
-(defun goodbye (name)
-  "Says goodbye to name, where `name` should be completed from what was given to `hello`."
-  (when *verbose*
-    (format t "[lo]g - verbose is ~a~&" *verbose*))
-  (format t "goodbye ~a~&" name))
-
-(defun sleep3 ()
-  (sleep 3))
-
-(defun vim ()
-  "Run vim."
-  (uiop:run-program "vim"
-                    :output :interactive
-                    :input :interactive))
-
-;;
-;; Lib
-;;
-;; (defun assoc-value (alist key &key (test #'equalp))
-;;   ;; Don't import Alexandria just for that.
-;;   ;; See also Quickutil to import only the utility we need.
-;;   ;; http://quickutil.org/lists/
-;;   (cdr (assoc key alist :test test)))
-
 (defparameter *help-preamble* ""
   "Text to display before the list of commands and variables.")
 
@@ -113,14 +73,8 @@
   "Text to display after the list of commands and variables.")
 
 (defun init-completions ()
-  ;TODO: to test !
-  (replic.completion:add-completion "goodbye" (lambda () *names*))
   (replic.completion:add-completion "set" (replic.completion:variables))
   (replic.completion:add-completion "help" #'help-completion))
-
-(defun echo (string &rest more)
-  "Print the rest of the line. Takes any number of arguments."
-  (format t "~a~{ ~a~}~&" string more))
 
 ;; shadow works with build but not on Slime ??
 (defun set (var arg)
