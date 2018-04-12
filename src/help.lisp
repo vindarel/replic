@@ -15,7 +15,6 @@
   "Format a line of help (with right justification etc).
    If `short` is t, print only the first paragraph denoted by two newline charaters (for the overview).
   "
-  ;; usage: (find-symbol "HELLO" :replic.base)
   (let* ((doc (documentation (replic.completion:get-package name)
                              function-or-variable))
          (doc (if short

@@ -14,6 +14,8 @@
            :reload
            ;; settings
            :*custom-complete*
+           :*help-preamble*
+           :*help-postamble*
            :*highlight*
            :*highlight-words*
            :*prompt*
