@@ -18,3 +18,4 @@
            :*verbose*
            :highlight
            :unhighlight))
+(replic.completion:add-completion "help" #'replic::help-completion)
