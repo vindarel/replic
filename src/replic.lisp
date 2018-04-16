@@ -115,20 +115,22 @@
     (when candidates
       (complete-from-list text candidates))))
 
-(defun custom-complete (text start end)
+(defun custom-complete (text start end &optional (line-buffer rl:*line-buffer*))
   "Complete a symbol.
 
   `text` is the partially entered word. start and end are the position on `rl:*line-buffer*'.
 
   When the cursor is at the beginning of the prompt, complete from commands.
   When `text` starts with `*`, complete from variables.
+
+  line-buffer: as argument for direct call in tests.
   "
   (declare (ignore end))
   (if (zerop start)
       (if (str:starts-with? "*" text)
           (complete-from-list text (replic.completion:variables))
           (complete-from-list text (replic.completion:commands)))
-      (complete-args text rl:*line-buffer*)))
+      (complete-args text line-buffer)))
 
 (defparameter *custom-complete* #'custom-complete
   "Completion function.
