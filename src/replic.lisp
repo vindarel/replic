@@ -7,7 +7,6 @@
   (:export :main
            :confirm
            :repl
-           :init-completions
            :functions-to-commands
            :help
            :set
@@ -73,10 +72,6 @@
 
 (defparameter *help-postamble* "For details, see the help of each command or variable."
   "Text to display after the list of commands and variables.")
-
-(defun init-completions ()
-  (replic.completion:add-completion "set" (replic.completion:variables))
-  (replic.completion:add-completion "help" #'help-completion))
 
 ;; shadow works with build but not on Slime ??
 (defun set (var arg)
@@ -302,9 +297,6 @@
 
           ;; load commands from the .replic.lisp init file.
           (functions-to-commands :replic.user)
-
-          ;; replic initialization:
-          (init-completions)
 
           ;; launch the repl.
           (repl))

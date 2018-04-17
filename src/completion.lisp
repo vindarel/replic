@@ -93,7 +93,7 @@
 ;; (defun get-completions (verb)
 (defun candidates (verb)
   "Return the completion candidates (list of strings) for this verb."
-  (let ((list-or-function (or (assoc-value *args-completions* verb :test 'equal)
+  (let ((list-or-function (or (assoc-value *args-completions* verb :test #'equal)
                               *default-command-completion*)))
     (cond
       ((functionp list-or-function)

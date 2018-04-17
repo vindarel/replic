@@ -18,4 +18,7 @@
            :*verbose*
            :highlight
            :unhighlight))
+
+(replic.completion:add-completion "set" #'replic.completion:variables)
+
 (replic.completion:add-completion "help" #'replic::help-completion)
