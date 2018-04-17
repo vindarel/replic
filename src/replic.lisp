@@ -76,11 +76,12 @@
 ;; shadow works with build but not on Slime ??
 (defun set (var arg)
   "Change this variable. t and nil denote true and false."
-  (setf (symbol-value (find-symbol (string-upcase var))) (if (string= "t" arg)
-                                                             t
-                                                             (if (string= "nil" arg)
-                                                                 nil
-                                                                 arg)))
+  (setf (symbol-value (replic.completion:get-symbol var))
+        (if (string= "t" arg)
+            t
+            (if (string= "nil" arg)
+                nil
+                arg)))
   (format t "~a set to ~a~&" var arg))
 
 (defun common-prefix (items)

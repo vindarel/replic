@@ -7,7 +7,7 @@
            :is-variable
            :get-function
            :get-variable
-           :get-package
+           :get-symbol
            :commands
            :variables
            :candidates
@@ -68,8 +68,25 @@
   (get-function arg))
 
 (defun get-package (name)
-  "Return the package this arg is from."
-  (find-symbol (string-upcase name) (assoc-value *packages* name :test #'equal)))
+  "Return the package this arg is from.
+
+  `name`: string designating a symbol, registered with `add-command`
+    or `add-variable`."
+  (assoc-value *packages* (string-downcase name) :test #'equal))
+
+(defun get-symbol (name)
+  "Return the symbol associated to name (str)."
+  (find-symbol (string-upcase name)
+               (get-package name)))
+
+(defun packages ()
+  "Get a list of uniq package symbols used in the application."
+  (let (packlist)
+    (mapcar (lambda (alist)
+              (unless (member (cdr alist) packlist)
+                (push (cdr alist) packlist)))
+            replic.completion::*packages*)
+    packlist))
 
 (defun add-completion (verb list-or-fn)
   ;; set-completion ?

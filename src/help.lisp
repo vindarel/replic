@@ -15,7 +15,7 @@
   "Format a line of help (with right justification etc).
    If `short` is t, print only the first paragraph denoted by two newline charaters (for the overview).
   "
-  (let* ((doc (documentation (replic.completion:get-package name)
+  (let* ((doc (documentation (replic.completion::get-symbol name)
                              function-or-variable))
          (doc (if short
                   (first (cl-ppcre:split "\\n\\n" doc))
