@@ -145,7 +145,7 @@
    arguments from `complete-args`.")
 
 
-(defun functions-to-commands (&optional (package :replic.base))
+(defun functions-to-commands (package)
   "Add exported functions of `package` to the list of commands to complete,
    add exported variables to the list of `set`-able variables.
 
