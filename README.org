@@ -59,10 +59,9 @@ and
 
 ** The executable and the init file
 
+Given the example =~/.replic.lisp= below, you can
 try =hello <name>= (completion for =hello=) and =goodbye <name>=,
 where <name> can be completed from what was given to =hello=.
-
-Your =.replic.lisp= looks like this:
 
 #+BEGIN_SRC lisp
 (in-package :replic.user)
@@ -132,15 +131,10 @@ replic > help
 
 Available commands
 ==================
-echo       ... Print the rest of the line. Takes any number of arguments.
-hello      ... Takes only one argument. Adds the given name to the global
-  `*names*` global variable, used to complete arguments of `goodbye`.
 highlight  ... Highlight the given words.
-goodbye    ... Says goodbye to name, where `name` should be completed from what was given to `hello`.
 help       ... Print the help of all available commands.
 reload     ... NIL
 set        ... Change this variable.
-vim        ... Run vim.
 
 Available variables
 ===================
@@ -165,17 +159,31 @@ You can change the prompt. It defaults to "> ". It can contain ansi colours.
 (setf replic:*prompt* (cl-ansi-text:green "replic > "))
 #+END_SRC
 
-If  you want  to  have the  base commands  (=help=,  =reload= and  the
-example =hello=, =goodbye= and =vim= so far):
+If you want  to have the base commands (=help=,  =reload= and =set= so
+far):
 
 #+BEGIN_SRC lisp
 (replic:functions-to-commands :replic.base)
 #+END_SRC
 
-Create the commands from all the exported functions and variables (except "main").
+Create the commands from all the exported functions and variables:
 
 #+BEGIN_SRC lisp
 (replic:functions-to-commands :my-package)
+#+END_SRC
+
+To exclude functions, use the =:exclude= list:
+
+#+BEGIN_SRC lisp
+(replic:functions-to-commands :my-package :exclude '("main"))
+#+END_SRC
+
+Create a command from one function:
+
+#+BEGIN_SRC lisp
+(replic.completion:add-command :function :package)
+;; add a variable:
+(replic.completion:add-variable :*variable* :package)
 #+END_SRC
 
 Start the repl:

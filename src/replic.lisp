@@ -145,22 +145,25 @@
    arguments from `complete-args`.")
 
 
-(defun functions-to-commands (package)
+(defun functions-to-commands (package &key exclude)
   "Add exported functions of `package` to the list of commands to complete,
    add exported variables to the list of `set`-able variables.
 
-   Remove any command named 'main'.
-
+   Do not add functions (strings) in the `exclude` list (mostly for \"main\").
   "
   (assert (symbolp package))
+  (assert (or nil (listp exclude)))
   (do-external-symbols (it package)
-    (unless (equal :MAIN it)
+    ;; we'll use strings because symbols have a package prefix: my-package:main != :main.
+    (unless (member (string-downcase (symbol-name it))
+                    exclude
+                    :test #'equal)
       (if (str:starts-with? "*" (string it))
           (replic.completion:add-variable it package)
           (replic.completion:add-command it package))))
   (values
-   (replic.completion:commands)
-   (replic.completion:variables))
+   (reverse (replic.completion:commands))
+   (reverse (replic.completion:variables)))
   )
 
 (defun confirm ()
