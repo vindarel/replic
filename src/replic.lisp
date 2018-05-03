@@ -149,12 +149,13 @@
   "Add exported functions of `package` to the list of commands to complete,
    add exported variables to the list of `set`-able variables.
 
-   Do not add functions (strings) in the `exclude` list (mostly for \"main\").
+   Do not add function names (strings) in the `exclude` list (mostly for \"main\").
   "
   (assert (symbolp package))
   (assert (or nil (listp exclude)))
   (do-external-symbols (it package)
-    ;; we'll use strings because symbols have a package prefix: my-package:main != :main.
+    ;; we'll use strings because symbols have a package prefix: my-package:main != :main
+    ;; and we want the most straightforward thing for the user.
     (unless (member (string-downcase (symbol-name it))
                     exclude
                     :test #'equal)
