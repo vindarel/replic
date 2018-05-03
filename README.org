@@ -136,6 +136,7 @@ help       ... Print the help of all available commands.
 reload     ... NIL
 set        ... Change this variable.
 unhighlight... Un-highlight the given words.
+quit       --- Quit the application.
 
 Available variables
 ===================
@@ -160,7 +161,7 @@ You can change the prompt. It defaults to "> ". It can contain ansi colours.
 (setf replic:*prompt* (cl-ansi-text:green "replic > "))
 #+END_SRC
 
-If  you  want to  have  the  base  commands (=help=,  =reload=,  =set=
+If you want to have the base commands (=help=, =reload=, =set=, =quit=,
 =highlight= and =unhighlight=):
 
 #+BEGIN_SRC lisp
