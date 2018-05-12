@@ -192,8 +192,7 @@
            (verb "")
            (function nil)
            (variable nil)
-           (args "")
-           (standard-output ""))
+           (args ""))
           ((string= "quit" (str:trim text)))
 
         (handler-case
@@ -223,12 +222,7 @@
           (if (and verb function)
               (handler-case
                   ;; Call the function.
-                  ;; Capture standard output in order to post-process it (highlight stuff).
-                  (progn
-                    (let ((*standard-output* (make-string-output-stream)))
-                      (apply function args)
-                      (setf standard-output (get-output-stream-string *standard-output*)))
-                    (print-results standard-output))
+                  (apply function args)
                 (#+sbcl sb-sys:interactive-interrupt (c)
                         (declare (ignore c))
                         (terpri))
