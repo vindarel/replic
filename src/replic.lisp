@@ -151,9 +151,9 @@
    (reverse (replic.completion:variables)))
   )
 
-(defun confirm ()
+(defun confirm (&optional (prompt "Do you want to quit ?"))
   "Ask confirmation. Nothing means yes."
-  (member (rl:readline :prompt (format nil  "~%Do you want to quit ? [Y]/n : "))
+  (member (rl:readline :prompt (format nil (str:concat "~%" prompt " [Y]/n : ")))
           '("y" "Y" "")
           :test 'equal))
 
