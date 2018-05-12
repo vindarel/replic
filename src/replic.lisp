@@ -15,8 +15,6 @@
            :*custom-complete*
            :*help-preamble*
            :*help-postamble*
-           :*highlight*
-           :*highlight-words*
            :*prompt*
            :*verbose*))
 
@@ -36,20 +34,8 @@
   "The prompt. Can contain ansi colours (use cl-ansi-text:green etc).")
 
 ;;
-;; Highlight / colorize words on output.
+;; Colorize words on output.
 ;;
-(defparameter *highlight* t
-  "If true, highlight words of *highlight-words* on standard output. Defaults to true.")
-
-(defparameter *highlight-words* nil
-  "A list of words to highlight in standard output.")
-
-(defparameter *highlight-default-color* :yellow
-  "Default color for highlighting. Symbol of the *colors* list. Defaults to yellow.")
-
-(defparameter *colors* '(:black :red :green :yellow :blue :magenta :cyan :white)
-  "List of color symbols available for text highlighting. From cl-ansi-text.")
-
 (defparameter *colors-functions* '(
                                    (:blue . cl-ansi-text:blue)
                                    (:green . cl-ansi-text:green)
@@ -59,8 +45,6 @@
                                    (:red . cl-ansi-text:red))
   "Alist of a symbol - its function to colorize text. From cl-ansi-text.")
 
-(defparameter *highlight-default-style :foreground
-  "Default cl-ansi-text style, :foreground (or :background) (a yellow background isn't always readable).")
 
 ;;
 ;; Examples
@@ -172,13 +156,6 @@
   (member (rl:readline :prompt (format nil  "~%Do you want to quit ? [Y]/n : "))
           '("y" "Y" "")
           :test 'equal))
-
-(defun print-results (input &key (stream t))
-  "Print the given results string, apply transformations if needed (highlight text)."
-  (assert (stringp input))
-  ;; see highlight.lisp
-  (setf input (highlight-input input))
-  (format stream "~&~a~&" input))
 
 (defun repl ()
   (in-package :replic) ;; needed for executable

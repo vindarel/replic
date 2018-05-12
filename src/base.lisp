@@ -7,8 +7,6 @@
   (:import-from :replic
                 :help
                 :reload
-                :highlight
-                :unhighlight
                 :*verbose*)
   (:shadowing-import-from :replic
                           :set)
@@ -17,8 +15,6 @@
            :set
            :reload
            :*verbose*
-           :highlight
-           :unhighlight
            :quit))
 
 (in-package replic.base)
