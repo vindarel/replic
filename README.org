@@ -27,6 +27,10 @@ What this is *not*:
   replacement for Slime ;) )
 - this is not a shell
 
+Example applications built on replic:
+
+- [[https://github.com/vindarel/cl-torrents][cl-torrents]]
+- [[https://github.com/vindarel/cl-bookshops][cl-bookshops]]
 
 =! experimental !=
 
