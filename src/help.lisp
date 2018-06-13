@@ -41,7 +41,8 @@
   (format-h1 "Available variables")
   (mapcar (lambda (it)
             ;; xxx justify text
-            (format-help it 'variable :short t))
+            (unless (string-equal "fortune" it)
+              (format-help it 'variable :short t)))
           (sort (copy-seq (replic.completion:variables)) #'string<))
 
   ;; Postamble.

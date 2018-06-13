@@ -163,7 +163,17 @@ You can change the prompt. It defaults to "> ". It can contain ansi colours.
 (setf replic:*prompt* (cl-ansi-text:green "replic > "))
 #+END_SRC
 
-If you want to have the base commands (=help=, =reload=, =set=, =quit=):
+You can  add a  prefix to it,  for example one  that changes  with the
+state of the application (current directory,...):
+
+#+BEGIN_SRC lisp
+(setf replic:*prompt-prefix* (format t "(~a) " "sthg"))
+#+END_SRC
+
+and concatenate the two with =(replic:prompt)=.
+
+If  you want  to  have  the base  commands  (=help=, =reload=,  =set=,
+=quit=), import the base package:
 
 #+BEGIN_SRC lisp
 (replic:functions-to-commands :replic.base)

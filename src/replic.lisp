@@ -16,6 +16,7 @@
            :*help-preamble*
            :*help-postamble*
            :*prompt*
+           :*prompt-prefix*
            :*verbose*))
 
 ;; The package to be used in the user's init files.
@@ -30,8 +31,11 @@
               to be used at the CLI, and how to complete them and
               their arguments.")
 
-(defparameter *prompt* "> "
-  "The prompt. Can contain ansi colours (use cl-ansi-text:green etc).")
+(defvar *prompt* "> "
+  "The base prompt, usually the application name. Can contain ansi colours (use cl-ansi-text:green etc). The full prompt is built with (prompt).")
+
+(defvar *prompt-prefix* nil
+  "A prefix, supposed to change during the application (current directory, venv,...)")
 
 ;;
 ;; Colorize words on output.
@@ -157,6 +161,10 @@
           '("y" "Y" "")
           :test 'equal))
 
+(defun prompt ()
+  "Return the prompt to display."
+  (str:concat *prompt-prefix* *prompt*))
+
 (defun repl ()
   (in-package :replic) ;; needed for executable
 
@@ -174,7 +182,7 @@
 
         (handler-case
             (setf text
-                  (rl:readline :prompt *prompt*
+                  (rl:readline :prompt (prompt)
                                :add-history t))
           (#+sbcl sb-sys:interactive-interrupt ()
                   (progn
