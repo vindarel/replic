@@ -17,6 +17,7 @@
            :*help-postamble*
            :*prompt*
            :*prompt-prefix*
+           :*confirm-exit*
            :*verbose*))
 
 ;; The package to be used in the user's init files.
@@ -37,6 +38,11 @@
 (defvar *prompt-prefix* nil
   "A prefix, supposed to change during the application (current directory, venv,...)")
 
+(defparameter *confirm-exit* t
+  "If true (the default), ask for confirmation when you try to exit
+  the program (with a C-d). The `quit` command doesn't ask for
+  confirmation.")
+
 ;;
 ;; Colorize words on output.
 ;;
@@ -48,11 +54,10 @@
                                    (:magenta . cl-ansi-text:magenta)
                                    (:red . cl-ansi-text:red))
   "Alist of a symbol - its function to colorize text. From cl-ansi-text.")
-
-
 ;;
 ;; Examples
 ;;
+
 (defparameter *verbose* nil "Example setting.")
 
 (defparameter *help-preamble* ""
@@ -155,11 +160,16 @@
    (reverse (replic.completion:variables)))
   )
 
-(defun confirm (&optional (prompt "Do you want to quit ?"))
+(defvar *prompt-exit* "Do you want to quit ?")
+
+(defun confirm (&key (prompt *prompt-exit*) (show-prompt-p *confirm-exit*))
   "Ask confirmation. Nothing means yes."
-  (member (rl:readline :prompt (format nil (str:concat "~%" prompt " [Y]/n : ")))
-          '("y" "Y" "")
-          :test 'equal))
+  (if show-prompt-p
+      (member (rl:readline :prompt (format nil (str:concat "~%" prompt " [Y]/n : ")))
+              '("y" "Y" "")
+              :test 'equal)
+      t))
+
 
 (defun prompt ()
   "Return the prompt to display."
