@@ -211,6 +211,15 @@ That's it. You didn't have to write the REPL.
  - =*prompt*= (str):  the readline prompt.  Defaults to simply  => =. Can
    contain ansi colours (use =cl-ansi-text:green= for example).
 
+ # Commented: we lack reading a configuration file.
+ # - =*confirm-exit*=  (t  or  nil):  if  =t=  (the  default),  ask  for
+   # confirmation when  the user tries to  exit the command line  with a
+   # =C-d= (EOF).
+
+ # - =*write-history*=  (t or  nil):  if =t=  (the  default), write  the
+   # commands to the app's history. (this needs =cl-readline= superior
+   # to may, 2018)
+
  - =*help-preamble*=: text to display at the beginning of the help.
 
  - =*help-postamble*=: text to display last.

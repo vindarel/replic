@@ -18,6 +18,8 @@
            :*prompt*
            :*prompt-prefix*
            :*confirm-exit*
+           :*history*
+           :*write-history*
            :*verbose*))
 
 ;; The package to be used in the user's init files.
@@ -32,16 +34,28 @@
               to be used at the CLI, and how to complete them and
               their arguments.")
 
+;;
+;; Prompt
+;;
 (defvar *prompt* "> "
   "The base prompt, usually the application name. Can contain ansi colours (use cl-ansi-text:green etc). The full prompt is built with (prompt).")
 
 (defvar *prompt-prefix* nil
   "A prefix, supposed to change during the application (current directory, venv,...)")
 
-(defparameter *confirm-exit* t
+(defvar *confirm-exit* t
   "If true (the default), ask for confirmation when you try to exit
   the program (with a C-d). The `quit` command doesn't ask for
   confirmation.")
+
+;;
+;; History
+;;
+(defvar *history* t
+  "If true (the default), read and write the history.")
+
+(defvar *write-history* t
+  "If true (the default), write the commands in the history.")
 
 ;;
 ;; Colorize words on output.
@@ -181,6 +195,9 @@
   ;; register completion
   (rl:register-function :complete #'custom-complete)
 
+  ;; read history.
+  (rl:read-history "/tmp/readline_history")
+
   (handler-case
       (do ((i 0 (1+ i))
            (text "")
@@ -227,7 +244,12 @@
                   (format t "~a~&" (symbol-value variable))
                   (format t "No command or variable bound to ~a~&" verb)))
 
-          (finish-output)))
+          (finish-output)
+
+          (when (and *history*
+                     *write-history*)
+            (rl:write-history "/tmp/readline_history"))
+          ))
 
     (error (c)
       (format t "~&Unknown error: ~&~a~&" c)))
