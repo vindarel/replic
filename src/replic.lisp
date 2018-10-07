@@ -153,31 +153,15 @@
 
 
 (defun functions-to-commands (package &key exclude)
-  "Add exported functions of `package` to the list of commands to complete,
-   add exported variables to the list of `set`-able variables.
-
-   Do not add function names (strings) in the `exclude` list (mostly for \"main\").
-  "
-  (assert (symbolp package))
-  (assert (or nil (listp exclude)))
-  (do-external-symbols (it package)
-    ;; we'll use strings because symbols have a package prefix: my-package:main != :main
-    ;; and we want the most straightforward thing for the user.
-    (unless (member (string-downcase (symbol-name it))
-                    exclude
-                    :test #'equal)
-      (if (str:starts-with? "*" (string it))
-          (replic.completion:add-variable it package)
-          (replic.completion:add-command it package))))
-  (values
-   (reverse (replic.completion:commands))
-   (reverse (replic.completion:variables)))
-  )
+  (declare (ignore package exclude))
+  (error "deprecated: use replic.completions:functions-to-command."))
 
 (defvar *prompt-exit* "Do you want to quit ?")
 
 (defun confirm (&key (prompt *prompt-exit*) (show-prompt-p *confirm-exit*))
-  "Ask confirmation. Nothing means yes."
+  "Ask confirmation. No input means yes.
+   Change the prompt string with :prompt. If :show-prompt-p evaluates
+   to true, skip the prompt and confirm."
   (if show-prompt-p
       (member (rl:readline :prompt (format nil (str:concat "~%" prompt " [Y]/n : ")))
               '("y" "Y" "")
@@ -281,7 +265,11 @@
 
 (defun main ()
   "Parse command line arguments and start the repl.
+
+  Read the configuration file(s) first, apply cli args second.
   "
+  (replic.config:apply-config :replic)
+
   (opts:define-opts
     (:name :help
            :description "Print this help and exit."
@@ -315,10 +303,10 @@
           (setf *prompt* (cl-ansi-text:green "replic > "))
 
           ;; create commands from the exported functions and variables.
-          (functions-to-commands :replic.base)
+          (replic.completion:functions-to-commands :replic.base)
 
           ;; load commands from the .replic.lisp init file.
-          (functions-to-commands :replic.user)
+          (replic.completion:functions-to-commands :replic.user)
 
           ;; launch the repl.
           (repl))

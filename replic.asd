@@ -10,10 +10,12 @@
                :alexandria
                :str
                :cl-ansi-text
-               :unix-opts)
+               :unix-opts
+               :py-configparser)
   :components ((:module "src"
                 :components
                 ((:file "completion")
+                 (:file "config")
                  (:file "replic")
                  (:file "help")
                  (:file "utils")
@@ -23,7 +25,7 @@
   :build-pathname "replic"
   :entry-point "replic:main"
 
-  :description ""
+  :description "A framework to build readline applications out of existing code."
   ;; :long-description
   ;; #.(read-file-string
      ;; (subpathname *load-pathname* "README.markdown"))

@@ -61,7 +61,7 @@ and
 : help help
 
 
-** The executable and the init file
+** User: the executable and the init file
 
 Given the example =~/.replic.lisp= below, you can
 try =hello <name>= (completion for =hello=) and =goodbye <name>=,
@@ -75,7 +75,7 @@ where <name> can be completed from what was given to =hello=.
 
 (defun hello (name)
   "Takes only one argument. Adds the given name to the global
-  `*names*` global variable, used to complete arguments of `goodbye`.
+  `*names*` variable, used to complete arguments of `goodbye`.
   "
   (format t "hello ~a~&" name)
   (push name *names*))
@@ -94,17 +94,6 @@ into account.
 
 See more examples in the =src/examples.lisp= file of this repository.
 
-
-*** Set variables
-
-: set *variable*
-
-We kept the "earmuffs" to denote variables.
-
-We get completion on the variables list.
-
-The "t" and "nil" strings are  understood for their lisp meaning, true
-and false.
 
 
 *** Define custom completion for arguments
@@ -155,7 +144,44 @@ The   general    =help=   shows    the   first   paragraph    of   the
 functions/parameters  docstring, the  =help  <cmd>=  function is  more
 complete and shows all of it.
 
-** Using replic as a library with an existing system
+*** Setting variables
+
+: set *variable*
+
+We kept the "earmuffs" to denote variables.
+
+We get completion on the variables list.
+
+The "t" and "nil" strings are  understood for their lisp meaning, true
+and false.
+
+*** Configuration file
+
+Replic  reads  an  =init=-like  configuration  file.   It  searches  a
+=.replic.conf=  file   in  three  places:  under   the  sources'  root
+directory,  under  =~/.config/=  and  at  the  user's  home  directory
+(=~/.replic.conf=).
+
+These are the default parameters with their default values:
+
+#+BEGIN_SRC text
+[default]
+confirm-exit = true
+verbose = false
+prompt = > 
+history = true
+write-history = true
+#+END_SRC
+
+"true", "True" and "t" are truthy and "false", "False" and "nil" are falsy.
+
+It  must  begin with  a  section  name  (=default=) (we  don't  handle
+different profiles yet).
+
+They are overriden by command line arguments.
+
+
+** Developer: using replic as a library with an existing system
 
 You can change the prompt. It defaults to "> ". It can contain ansi colours.
 
@@ -205,20 +231,35 @@ Start the repl:
 
 That's it. You didn't have to write the REPL.
 
+# For illustration,  this is [[https://github.com/vindarel/cl-torrents/commit/ebc1dba5b168dd8432bff42c52a90e3bc6e19454#diff-1b0d53aa910ad7e1016f52042eb10b53L285][the  code we  saved]] by switching  to replic
+# (not counting the extra features).
+
 
 *** Settings
+
+    Variables that are  exported from a package on the  lisp side will
+    be automacitally available  for the config file and  read when the
+    application starts up.  The rule is that in the  config file, we don't
+    use earmuffs (=*foo*= -> =foo=).  Lispers shall use a lispy config
+    file anyway.
+
+    The available variables are:
+
+ - =*verbose*= (bool): if true, print stuff during the program execution.
+
+ - =*confirm-exit*=   (bool):  if   true   (the   default),  ask   for
+   confirmation when a user tries to exit the program with a =C-d= (EOF).
 
  - =*prompt*= (str):  the readline prompt.  Defaults to simply  => =. Can
    contain ansi colours (use =cl-ansi-text:green= for example).
 
- # Commented: we lack reading a configuration file.
- # - =*confirm-exit*=  (t  or  nil):  if  =t=  (the  default),  ask  for
-   # confirmation when  the user tries to  exit the command line  with a
-   # =C-d= (EOF).
+ - =*confirm-exit*=  (t  or  nil):  if  =t=  (the  default),  ask  for
+   confirmation when  the user tries to  exit the command line  with a
+   =C-d= (EOF).
 
- # - =*write-history*=  (t or  nil):  if =t=  (the  default), write  the
-   # commands to the app's history. (this needs =cl-readline= superior
-   # to may, 2018)
+ - =*write-history*=  (t or  nil):  if =t=  (the  default), write  the
+   commands to the app's history. (this needs =cl-readline= superior
+   to may, 2018)
 
  - =*help-preamble*=: text to display at the beginning of the help.
 
