@@ -1,7 +1,7 @@
 LISP?=sbcl
 
 build:
-	$(LISP) --load replic.asd \
+	$(LISP)	--non-interactive \
+		--load replic.asd \
 		--eval '(ql:quickload :replic)' \
-		--eval '(asdf:make :replic)' \
-		--eval '(quit)'
+		--eval '(asdf:make :replic)'
