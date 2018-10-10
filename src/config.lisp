@@ -137,6 +137,6 @@
   (read-config package) ;TODO: very long ??
   (format t "-- config: ~a~&" *cfg*)
   (mapcar (lambda (var)
-            (when (has-option-p (no-earmuffs var))
+            (when (has-option-p (no-earmuffs var) package)
               (read-option var package)))
           (get-exported-variables package)))
