@@ -1,10 +1,9 @@
 (defpackage replic-test
   (:use :cl
-        :replic
+        :replic.completion
         :prove))
 (in-package :replic-test)
 
-;; NOTE: To run this test file, execute `(asdf:test-system :replic)' in your Lisp.
 
 (plan nil)
 
@@ -18,12 +17,12 @@
      ,@body))
 
 (with-fixtures
-  (is (replic:functions-to-commands :fixture)
+  (is (replic.completion:functions-to-commands :fixture)
       '("foo" "main")
       "Adding functions from a package."))
 
 (with-fixtures
-    (is (replic:functions-to-commands :fixture :exclude '("main"))
+    (is (replic.completion:functions-to-commands :fixture :exclude '("main"))
         '("foo")
         "Exclude functions."))
 
