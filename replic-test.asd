@@ -10,7 +10,8 @@
                "prove")
   :components ((:module "tests"
                 :components
-                ((:test-file "test-replic"))))
+                ((:test-file "test-replic")
+                 (:test-file "test-config"))))
   :description "Test system for replic"
 
   ;; :perform (test-op (op c) (symbol-call :prove-asdf :run-test-system c)))

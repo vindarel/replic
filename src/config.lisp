@@ -45,9 +45,12 @@
             (py-configparser:sections *cfg*))
     t))
 
-(defun has-option-p (option &key (section *section*))
+(defun has-option-p (option package/section)
+  "Check if the config object has `option` in section
+  `package/section` (the section is inferred from the package name)."
+  ;TODO: default -> replic ?
   (ignore-errors
-    (py-configparser:has-option-p *cfg* section option)))
+    (py-configparser:has-option-p *cfg* package/section option)))
 
 (defun option (option &key (section *section*))
   "Return this option's value (as string)."
