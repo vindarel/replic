@@ -3,7 +3,7 @@
 |#
 
 (asdf:defsystem "replic"
-  :version "0.3.1"
+  :version "0.0"
   :author "vindarel"
   :license "MIT"
   :depends-on (:cl-readline
