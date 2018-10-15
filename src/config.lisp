@@ -18,14 +18,21 @@
   "Default section header of the config file(s) to read parameters from.")
 
 
-(defun read-config (package)
+(defun read-config (package &optional (cfg-file *cfg-file*))
+  "Search for the config files, parse the config, and return the config object.
+   Three locations: in the package root, in ~/config/, in the home.
+   If no `cfg-file` argument is given, use the global `*cfg-file*` (\".replic.conf\")."
+  ;; (format t ";; debug: start asdf relative-pathname~&")
+  (force-output)
   (setf *cfg-sources* (list
-                       (asdf:system-relative-pathname package *cfg-file*)
+                       (asdf:system-relative-pathname package cfg-file) ;TODO: asdf slowdown may be here.
                        ;; Setting here and not in defparameter:
                        ;; ensure this is the user's value, not where the binary was built on.
-                       (merge-pathnames (str:concat ".config/" *cfg-file*) (user-homedir-pathname))
-                       (merge-pathnames *cfg-file* (user-homedir-pathname))
-                       *cfg-file*))
+                       (merge-pathnames (str:concat ".config/" cfg-file) (user-homedir-pathname))
+                       (merge-pathnames cfg-file (user-homedir-pathname))
+                       cfg-file))
+  ;; (format t ";; debug: stop asdf relative-pathname~&")
+  ;; (force-output)
   (loop for it in *cfg-sources*
      do (progn
           (when (probe-file it)
@@ -131,14 +138,19 @@
                (format t "~a is an int: ~a~&" key val)
                (set-option key (parse-integer val) package))))))))
 
-(defun apply-config (package)
+(defun print-options (&optional (section "default"))
+  (mapcar (lambda (it)
+            (format t "~a: ~a~&" (car it) (cdr it)))
+          (py-configparser:items *cfg* section)))
+
+(defun apply-config (package &optional (cfg-file *cfg-file*))
   "Read the config files and for every variable of this package, get its new value.
    In the config file, variables don't get lispy earmuffs."
   (declare (ignorable package))
-  (format t "-- reading config...~&")
+  ;; (format t "-- reading config...~&")
   (force-output)
-  (read-config package) ;TODO: very long ??
-  (format t "-- config: ~a~&" *cfg*)
+  (read-config package cfg-file) ;XXX: very long with executable ??
+  ;; (format t "-- config: ~a~&" *cfg*)
   (mapcar (lambda (var)
             (when (has-option-p (no-earmuffs var) package)
               (read-option var package)))
