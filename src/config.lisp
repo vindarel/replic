@@ -95,10 +95,10 @@
   (if (str:starts-with? "*" var)
       (string-trim "*" var)))
 
-(defparameter *true-list* '("t" "true" "True")
+(defparameter *true-list* '("t" "true" "True" "yes" "Yes")
   "List of strings meaning 'true'.")
 
-(defparameter *false-list* '("nil" "false" "False")
+(defparameter *false-list* '("nil" "false" "False" "no" "No")
   "List of strings meaning 'false'.")
 
 (defun truthy (it)
