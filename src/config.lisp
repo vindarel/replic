@@ -23,7 +23,7 @@
    Three locations: in the package root, in ~/config/, in the home.
    If no `cfg-file` argument is given, use the global `*cfg-file*` (\".replic.conf\")."
   ;; (format t ";; debug: start asdf relative-pathname~&")
-  (force-output)
+  ;; (force-output)
   (setf *cfg-sources* (list
                        (asdf:system-relative-pathname package cfg-file) ;TODO: asdf slowdown may be here.
                        ;; Setting here and not in defparameter:
@@ -52,12 +52,12 @@
             (py-configparser:sections *cfg*))
     t))
 
-(defun has-option-p (option package/section)
+(defun has-option-p (option &optional (section "default"))
   "Check if the config object has `option` in section
   `package/section` (the section is inferred from the package name)."
   ;TODO: default -> replic ?
   (ignore-errors
-    (py-configparser:has-option-p *cfg* package/section option)))
+    (py-configparser:has-option-p *cfg* section option)))
 
 (defun option (option &key (section *section*))
   "Return this option's value (as string)."
@@ -119,15 +119,12 @@
   (let ((val (option (no-earmuffs key))))
     (cond
       ((truthy val)
-       (format t "~a is truthy~&" key)
        (set-option key t package))
 
       ((falthy val)
-       (format t "~a is falthy.~&" key)
        (set-option key nil package))
 
       ((null (ignore-errors (parse-integer val)))
-       (format t "~a is a string: ~a~&" key val)
        (set-option key val package))
 
       (t
@@ -135,7 +132,6 @@
        (unless
            (ignore-errors
              (when (parse-integer val)
-               (format t "~a is an int: ~a~&" key val)
                (set-option key (parse-integer val) package))))))))
 
 (defun print-options (&optional (section "default"))
@@ -147,11 +143,8 @@
   "Read the config files and for every variable of this package, get its new value.
    In the config file, variables don't get lispy earmuffs."
   (declare (ignorable package))
-  ;; (format t "-- reading config...~&")
-  (force-output)
-  (read-config package cfg-file) ;XXX: very long with executable ??
-  ;; (format t "-- config: ~a~&" *cfg*)
+  (read-config package cfg-file)    ;XXX: very long with executable ??
   (mapcar (lambda (var)
-            (when (has-option-p (no-earmuffs var) package)
+            (when (has-option-p (no-earmuffs var))
               (read-option var package)))
           (get-exported-variables package)))
