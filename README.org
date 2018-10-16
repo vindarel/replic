@@ -158,9 +158,8 @@ and false.
 *** Configuration file
 
 Replic  reads  an  =init=-like  configuration  file.   It  searches  a
-=.replic.conf=  file   in  three  places:  under   the  sources'  root
-directory,  under  =~/.config/=  and  at  the  user's  home  directory
-(=~/.replic.conf=).
+=.replic.conf=  file  under  =~/.config/=   and  at  the  user's  home
+directory (=~/.replic.conf=).
 
 These are the default parameters with their default values:
 

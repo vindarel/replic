@@ -22,17 +22,12 @@
   "Search for the config files, parse the config, and return the config object.
    Three locations: in the package root, in ~/config/, in the home.
    If no `cfg-file` argument is given, use the global `*cfg-file*` (\".replic.conf\")."
-  ;; (format t ";; debug: start asdf relative-pathname~&")
-  ;; (force-output)
   (setf *cfg-sources* (list
-                       (asdf:system-relative-pathname package cfg-file) ;TODO: asdf slowdown may be here.
                        ;; Setting here and not in defparameter:
                        ;; ensure this is the user's value, not where the binary was built on.
                        (merge-pathnames (str:concat ".config/" cfg-file) (user-homedir-pathname))
                        (merge-pathnames cfg-file (user-homedir-pathname))
                        cfg-file))
-  ;; (format t ";; debug: stop asdf relative-pathname~&")
-  ;; (force-output)
   (loop for it in *cfg-sources*
      do (progn
           (when (probe-file it)
