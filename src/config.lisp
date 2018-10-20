@@ -1,6 +1,9 @@
 (defpackage replic.config
   (:use :cl)
-  (:export :apply-config))
+  (:export :apply-config
+           :read-config
+           :has-option-p
+           :option))
 
 (in-package :replic.config)
 
@@ -18,7 +21,7 @@
   "Default section header of the config file(s) to read parameters from.")
 
 
-(defun read-config (package &optional (cfg-file *cfg-file*))
+(defun read-config (&optional (cfg-file *cfg-file*))
   "Search for the config files, parse the config, and return the config object.
    Three locations: in the package root, in ~/config/, in the home.
    If no `cfg-file` argument is given, use the global `*cfg-file*` (\".replic.conf\")."
@@ -138,7 +141,7 @@
   "Read the config files and for every variable of this package, get its new value.
    In the config file, variables don't get lispy earmuffs."
   (declare (ignorable package))
-  (read-config package cfg-file)    ;XXX: very long with executable ??
+  (read-config cfg-file)
   (mapcar (lambda (var)
             (when (has-option-p (no-earmuffs var))
               (read-option var package)))
