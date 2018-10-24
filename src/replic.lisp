@@ -82,7 +82,8 @@
 
 ;; shadow works with build but not on Slime ??
 (defun set (var arg)
-  "Change this variable. t and nil denote true and false. Try to parse the argument into an integer."
+  "Change this variable. t and nil denote true and false. Try to parse the argument into an integer.
+   See base.lisp for what this command takes as completion candidates (in short, all variables)."
   ;; xxx: input validation.
   (setf (symbol-value (replic.completion:get-symbol var))
         (cond

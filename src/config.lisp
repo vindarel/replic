@@ -53,7 +53,6 @@
 (defun has-option-p (option &optional (section "default"))
   "Check if the config object has `option` in section
   `package/section` (the section is inferred from the package name)."
-  ;TODO: default -> replic ?
   (ignore-errors
     (py-configparser:has-option-p *cfg* section option)))
 
