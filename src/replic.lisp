@@ -8,6 +8,7 @@
            :confirm
            :repl
            :functions-to-commands
+           :load-init
            :help
            :set
            :reload
@@ -250,13 +251,18 @@
   (uiop:quit))
 
 (defun load-init (&optional file)
-  "Load `~/.replic.lisp` or the given file."
+  "Load `~/.replic.lisp`, or the given file.
+   The file name must be valid.
+
+   To call this function with a valid filename, you can use
+
+       (merge-pathnames \".foo.lisp\" (user-homedir-pathname))
+
+   Note: to load an ini-style config file, use replic.config:apply-config."
   (if file
       (if (probe-file file)
           (progn (load file)
-                 (setf *init-file* file))
-          (progn (format-error (format nil "The file ~a does not exist.~&" file))
-                 (uiop:quit)))
+                 (setf *init-file* file)))
       (when (probe-file *init-file*)
         (load *init-file*))))
 
