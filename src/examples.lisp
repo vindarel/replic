@@ -13,6 +13,9 @@
 ;; Demo examples.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defparameter *names* '()
+  "List of names (string) given to `hello`. Will be autocompleted by `goodbye`.")
+
 (defun hello (name)
   "Takes only one argument. Adds the given name to the global
   `*names*` global variable, used to complete arguments of `goodbye`.
@@ -22,12 +25,21 @@
 
 (defun goodbye (name)
   "Says goodbye to name, where `name` should be completed from what was given to `hello`."
-  (when *verbose*
-    (format t "[lo]g - verbose is ~a~&" *verbose*))
   (format t "goodbye ~a~&" name))
 
+;; Custom completion for goodbye:
+(replic.completion:add-completion "goodbye" (lambda () *names*))
+
+;; and export the two functions to find them as commands.
+(export '(hello goodbye))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; We can run whatever program that runs in a terminal.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun vim ()
   "Run vim."
+  ;; xxx: misses file completion.
   (uiop:run-program "vim"
                     :output :interactive
                     :input :interactive))
@@ -57,21 +69,11 @@
 
 ;; Add the list of radios to the command documentation
 ;; so that it is visible by "help radio".
-;; Print a coma-separated list of radios, finished by a "and" and a point.
-;; thanks http://random-state.net/features-of-common-lisp.html#The_FORMAT_function
 (let ((doc (documentation #'radio 'function)))
+  ;; weird format syntax: print a coma-separated list of radios, finished by a "and" and a point.
+  ;; thanks http://random-state.net/features-of-common-lisp.html#The_FORMAT_function
   (setf (documentation #'radio 'function) (format nil "~a~&~%The list of available radio streams is: ~a" doc (format nil "~{~a~#[.~; and ~:;, ~]~}" *radios-names*))))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Run vim.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun vim ()
-  "Run vim."
-  (uiop:run-program "vim"
-                    :output :interactive
-                    :input :interactive))
-;; todo: file completion.
 
 (export '(vim
           radio
