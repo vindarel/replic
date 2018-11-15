@@ -82,22 +82,33 @@
   "Text to display after the list of commands and variables.")
 
 ;; shadow works with build but not on Slime ??
-(defun set (var arg)
+(defun set (&optional var arg)
   "Change this variable. t and nil denote true and false. Try to parse the argument into an integer.
    See base.lisp for what this command takes as completion candidates (in short, all variables)."
   ;; xxx: input validation.
-  (setf (symbol-value (replic.completion:get-symbol var))
-        (cond
-          ((string= "t" arg)
-           t)
-          ((string= "nil" arg)
-           nil)
-          (t
-           (handler-case
-               (parse-integer arg)
-             (error ()
-               arg)))))
-  (format t "~a set to ~a~&" var arg))
+
+  ;; print all current paramaters.
+  (when (and (null var)
+             (null arg))
+    (format t "Available parameters:~{ ~a~#[~;, and ~:;,~]~}.~&" (replic.completion:variables)))
+
+  (when (and var
+             (null arg))
+    (format t "var is: foo~&"))
+
+  (when (and var arg)
+    (setf (symbol-value (replic.completion:get-symbol var))
+          (cond
+            ((string= "t" arg)
+             t)
+            ((string= "nil" arg)
+             nil)
+            (t
+             (handler-case
+                 (parse-integer arg)
+               (error ()
+                 arg)))))
+    (format t "~a set to ~a~&" var arg)))
 
 (defun common-prefix (items)
   ;; tmp waiting for cl-str 0.5 in Quicklisp february.

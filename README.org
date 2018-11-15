@@ -144,16 +144,23 @@ The   general    =help=   shows    the   first   paragraph    of   the
 functions/parameters  docstring, the  =help  <cmd>=  function is  more
 complete and shows all of it.
 
-*** Setting variables
+*** Setting and seeing variables
+
+=set= can be used with zero, one or two arguments:
+
+: set
+
+shows all available variables,
 
 : set *variable*
 
+this prints the value of this variable (use auto-completion),
+
+: set *variable* new-value
+
+and this sets a new value. "yes", "true" and "t" denote true.
+
 We kept the "earmuffs" to denote variables.
-
-We get completion on the variables list.
-
-The "t" and "nil" strings are  understood for their lisp meaning, true
-and false.
 
 *** Configuration file
 
