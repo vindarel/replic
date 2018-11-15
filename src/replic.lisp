@@ -4,6 +4,9 @@
   (:import-from :alexandria
                 :curry
                 :assoc-value)
+  (:import-from :replic.utils
+                :truthy
+                :falsy)
   (:export :main
            :confirm
            :repl
@@ -83,7 +86,13 @@
 
 ;; shadow works with build but not on Slime ??
 (defun set (&optional var arg)
-  "Change this variable. t and nil denote true and false. Try to parse the argument into an integer.
+  "Change a variable or see values.
+
+   With no arguments, see what parameters are available. With one argument, see the value of this variable.
+   With a second argument, set it.
+
+   \"yes\", \"true\" or \"t\" and \"no\", \"false\" or \"nil\"  denote true and false, respectively.
+
    See base.lisp for what this command takes as completion candidates (in short, all variables)."
   ;; xxx: input validation.
 
@@ -94,14 +103,14 @@
 
   (when (and var
              (null arg))
-    (format t "var is: foo~&"))
+    (format t "~a is: ~a~&" var (symbol-value (replic.completion:get-symbol var))))
 
   (when (and var arg)
     (setf (symbol-value (replic.completion:get-symbol var))
           (cond
-            ((string= "t" arg)
+            ((truthy arg)
              t)
-            ((string= "nil" arg)
+            ((falsy arg)
              nil)
             (t
              (handler-case

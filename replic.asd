@@ -14,11 +14,11 @@
                :py-configparser)
   :components ((:module "src"
                 :components
-                ((:file "completion")
+                ((:file "utils")
+                 (:file "completion")
                  (:file "config")
                  (:file "replic")
                  (:file "help")
-                 (:file "utils")
                  (:file "base"))))
 
   :build-operation "program-op"

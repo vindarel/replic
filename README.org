@@ -126,7 +126,7 @@ Available commands
 ==================
 help       ... Print the help of all available commands.
 reload     ... NIL
-set        ... Change this variable.
+set        ... Change a variable, see its value, or see all variables.
 quit       --- Quit the application.
 
 Available variables

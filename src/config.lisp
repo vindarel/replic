@@ -1,5 +1,8 @@
 (defpackage replic.config
   (:use :cl)
+  (:import-from :replic.utils
+                :truthy
+                :falsy)
   (:export :apply-config
            :read-config
            :has-option-p
@@ -92,18 +95,6 @@
   (if (str:starts-with? "*" var)
       (string-trim "*" var)))
 
-(defparameter *true-list* '("t" "true" "True" "yes" "Yes")
-  "List of strings meaning 'true'.")
-
-(defparameter *false-list* '("nil" "false" "False" "no" "No")
-  "List of strings meaning 'false'.")
-
-(defun truthy (it)
-  (position it *true-list* :test #'equalp))
-
-(defun falthy (it)
-  (position it *false-list* :test #'equalp))
-
 (defun set-option (var val package)
   "Get the symbol associated to `var` in 'package' and set it."
   (setf (symbol-value (find-symbol (string-upcase var) package))
@@ -118,7 +109,7 @@
       ((truthy val)
        (set-option key t package))
 
-      ((falthy val)
+      ((falsy val)
        (set-option key nil package))
 
       ((null (ignore-errors (parse-integer val)))

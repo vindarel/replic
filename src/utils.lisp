@@ -1,4 +1,10 @@
-(in-package :replic)
+(defpackage replic.utils
+  (:use :cl)
+  (:export :format-code
+           :truthy
+           :falsy))
+
+(in-package :replic.utils)
 
 (defparameter *colorize-output* t
   "Enable printing text with ansi colors.")
@@ -45,3 +51,18 @@
                      (format *error-output* "~a~&Did you install pygments ?~&~%" c)
                      (format stream txt))))
       (format stream txt)))
+
+;;;
+;;; Truthy and falsy values (yes, no etc).
+;;;
+(defparameter *true-list* '("t" "true" "True" "yes" "Yes")
+  "List of strings meaning 'true'.")
+
+(defparameter *false-list* '("nil" "false" "False" "no" "No")
+  "List of strings meaning 'false'.")
+
+(defun truthy (it)
+  (position it *true-list* :test #'equalp))
+
+(defun falsy (it)
+  (position it *false-list* :test #'equalp))
