@@ -40,14 +40,14 @@
   "Return the list of available variables."
   *variables*)
 
-(defun add-command (it package)
+(defun add-command (name package)
   "Define a command.
    Specify the package it comes from.
    Takes a symbol or a string and stores a lowercase string.
    "
-  (let ((it (string-downcase (string it))))
-    (push (cons it package) *packages*)
-    (push it *commands*)))
+  (let ((name (string-downcase (string name))))
+    (push (cons name package) *packages*)
+    (push name *commands*)))
 
 (defun add-variable (it package)
   "Define a variable (as a string), inside package `package`.
