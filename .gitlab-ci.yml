@@ -1,11 +1,8 @@
 image: daewok/lisp-devel
 
-stages:
-  - test
-  - build
-
-before_script:
-  - apt-get update -qy
+# stages:
+  # - test
+  # - build
 
 test:
   stage: test
