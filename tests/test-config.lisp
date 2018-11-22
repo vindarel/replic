@@ -16,12 +16,8 @@ an-int = 1
      ,@body))
 
 (with-config
-  (ok (replic.config::read-config :replic)
+  (ok (replic.config::apply-config :replic)
       "Read config files."))
-
-(with-config
-  (ok (replic.config::has-config-p)
-      "has-config-p"))
 
 (with-config
   (ok (position "*confirm-exit*"

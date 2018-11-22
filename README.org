@@ -3,14 +3,15 @@
 Building a  readline application is  cool, but readline gives  you the
 basics  and you  must still  build  a REPL  around it:  loop and  read
 commands, catch a =C-c=, a =C-d=,  ask confirmation to quit, print the
-general help, help of a command, setup completions, load an init file,
+general help, the help of a command, setup the completion of commands, the
+completion of their arguments, load an init file,
 colorize output,...  =replic= does this for you.
 
-You can use =replic= as a ready-to-use executable or as a library.
+You can use =replic= as a *ready-to-use executable* or as a *library*.
 
 Using  the executable,  you can  define functions  and variables  in
-=~/.replic.lisp=, give them completion candidates, and use them on the
-replic command line.
+=~/.replic.lisp=,  give  them  completion  candidates,  and  use  them
+straight away on the replic command line.
 
 With the library you can automatically  build a
 REPL and turn functions you already have into commands in the readline prompt,
@@ -25,14 +26,12 @@ What this is *not*:
 
 - this  is  not a  Lisp  REPL.  See [[https://github.com/koji-kojiro/cl-repl][cl-repl]]  for  that  (itself not  a
   replacement for Slime ;) )
-- this is not a shell
+- this is not a shell. See [[https://github.com/bradleyjensen/shcl][shcl]].
 
 Example applications built on replic:
 
 - [[https://github.com/vindarel/cl-torrents][cl-torrents]]
 - [[https://github.com/vindarel/cl-bookshops][cl-bookshops]]
-
-=! experimental !=
 
 
 ** Installation
