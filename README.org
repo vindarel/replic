@@ -38,6 +38,9 @@ Example applications built on replic:
 
 Either download the executable, or clone this repo into =~/quicklisp/local-projects/=.
 
+__Note__: you  need the [[https://github.com/vindarel/cl-readline][cl-readline]]  library from Quicklisp of  end of
+may, 2018 (for the read and write history feature). See =make install=
+for a quick clone.
 
 Then build the executable with =make build=.
 

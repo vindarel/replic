@@ -16,3 +16,8 @@ test:
 		--eval '(ql:quickload :replic-test)' \
 	     	--eval '(prove:run #P"tests/test-replic.lisp")' \
 	     	--eval '(prove:run #P"tests/test-config.lisp")'
+
+# Install dependencies, mostly for Docker.
+install:
+	# cl-readline needs the update of may, 10th for history read and write.
+	git clone https://github.com/vindarel/cl-readline ~/quicklisp/local-projects/
