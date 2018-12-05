@@ -36,17 +36,19 @@ Example applications built on replic:
 
 ** Installation
 
-Either  [[https://gitlab.com/vindarel/replic/-/jobs/124784641][download  the  executable]]  (a 14MB  zipped  download,  a  60Mo
+Either  [[https://gitlab.com/vindarel/replic/-/jobs][download  the  executable]]  (a 14MB  zipped  download,  a  60Mo
 GNU/Linux  x64 self-contained  binary,  instant start-up  !), make  it
 executable (=chmod +x replic=) and run it: =./replic=,
 
-either clone this repo into =~/quicklisp/local-projects/=.
+either clone this repo into =~/quicklisp/local-projects/=
+
+and build the executable with =make build=.
 
 __Note__: you  need the [[https://github.com/vindarel/cl-readline][cl-readline]]  library from Quicklisp of  end of
 may, 2018 (for the read and write history feature). See =make install=
 for a quick clone.
 
-Then build the executable with =make build=.
+Run it:
 
 : replic -h
 
@@ -57,14 +59,15 @@ Available options:
   -l, --load ARG           Load the given file.
 #+END_EXPORT
 
-run:
-
 : ./replic
 
-and
+and see the available commands:
 
-: help
-: help help
+: replic > help
+: replic > help help
+
+Now add commands in your lisp init file (see next section) or build an
+application with it (see the Developer section).
 
 
 ** User: the executable and the init file
