@@ -15,6 +15,7 @@
            :help
            :set
            :reload
+           :version
            ;; settings
            :*custom-complete*
            :*help-preamble*
@@ -24,13 +25,19 @@
            :*confirm-exit*
            :*history*
            :*write-history*
-           :*verbose*))
+           :*verbose*
+           :*version*))
 
 ;; The package to be used in the user's init files.
 (defpackage replic.user
   (:use :cl))
 
 (in-package :replic)
+
+(defvar *version* (asdf/driver:read-file-form "version.lisp-expr"))
+
+(defun version ()
+  *version*)
 
 (defparameter *init-file* #p"~/.replic.lisp"
               "The init file to load at startup, containing any lisp
