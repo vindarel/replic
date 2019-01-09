@@ -34,7 +34,9 @@
 
 (in-package :replic)
 
-(defvar *version* (asdf/driver:read-file-form "version.lisp-expr"))
+;; (defvar *version* (asdf/driver:read-file-form "version.lisp-expr"))
+;; fails when loaded from another lib.
+(defvar *version* 0.10)
 
 (defun version ()
   *version*)
