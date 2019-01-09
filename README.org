@@ -36,13 +36,19 @@ Example applications built on replic:
 
 ** Installation
 
-Either  [[https://gitlab.com/vindarel/replic/-/jobs][download  the  executable]]  (a 14MB  zipped  download,  a  60Mo
+You can  [[https://gitlab.com/vindarel/replic/-/jobs][download  the  executable]]  (a 14MB  zipped  download,  a  60Mo
 GNU/Linux  x64 self-contained  binary,  instant start-up  !), make  it
 executable (=chmod +x replic=) and run it: =./replic=,
 
-either clone this repo into =~/quicklisp/local-projects/=
+or build it yourself.
 
-and build the executable with =make build=.
+- the library is on Quicklisp (since the 2019-01-07 dist):
+
+: (ql:quickload :replic)
+
+or clone this repo into =~/quicklisp/local-projects/=,
+
+then build the executable with =make build=.
 
 __Note__: you  need the [[https://github.com/vindarel/cl-readline][cl-readline]]  library from Quicklisp of  end of
 may, 2018 (for the read and write history feature). See =make install=
@@ -197,6 +203,10 @@ They are overriden by command line arguments.
 
 
 ** Developer: using replic as a library with an existing system
+
+=replic= is in Quicklisp (2019-01-07):
+
+: (ql:quickload :replic)
 
 *** Change the prompt
 
