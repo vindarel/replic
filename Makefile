@@ -4,12 +4,14 @@ all: test
 
 build:
 	$(LISP)	--non-interactive \
+		--eval '#-quicklisp (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' \
 		--load replic.asd \
 		--eval '(ql:quickload :replic)' \
 		--eval '(asdf:make :replic)'
 
 test:
 	$(LISP) --non-interactive \
+		--eval '#-quicklisp (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' \
 		--load replic.asd \
 		--load replic-test.asd \
 		--eval '(ql:quickload :replic)' \
