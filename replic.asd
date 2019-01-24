@@ -5,7 +5,7 @@
 (asdf:defsystem "replic"
   ;; :version (:read-file-form "version.lisp-expr")
   ;; This is relative to the load path, so it fails from another library.
-  :version 0.1
+  :version "0.10"
   :author "vindarel"
   :license "MIT"
   :depends-on (:cl-readline
