@@ -146,7 +146,7 @@ quit       --- Quit the application.
 
 Available variables
 ===================
-*verbose*  ... Example setting.
+*verbose*  ... If true, print debugging information during the program execution.
 #+END_SRC
 
 Write a preamble and a postamble in =*help-preamble*= and =*help-postamble*=.
@@ -328,7 +328,7 @@ That's it. You didn't have to write the REPL.
 
     The available variables are:
 
- - =*verbose*= (bool): if true, print stuff during the program execution.
+ - =*verbose*= (bool): if true, print debugging information during the program execution.
 
  - =*confirm-exit*=   (bool):  if   true   (the   default),  ask   for
    confirmation when a user tries to exit the program with a =C-d= (EOF).

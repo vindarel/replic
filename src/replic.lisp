@@ -85,7 +85,7 @@
 ;; Examples
 ;;
 
-(defparameter *verbose* nil "Example setting.")
+(defparameter *verbose* nil "If true, print debugging information during the program's execution.")
 
 (defparameter *help-preamble* ""
   "Text to display before the list of commands and variables.")
