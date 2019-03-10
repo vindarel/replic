@@ -42,7 +42,7 @@ executable (=chmod +x replic=) and run it: =./replic=,
 
 or build it yourself.
 
-- the library is on Quicklisp (since the 2019-01-07 dist):
+- the library is on Quicklisp (since the 2019-01-07 dist) and on [[http://ultralisp.org/][Ultralisp]]:
 
 : (ql:quickload :replic)
 
