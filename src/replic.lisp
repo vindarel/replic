@@ -2,7 +2,6 @@
   (:use :cl)
   (:shadow #:set)
   (:import-from :alexandria
-                :curry
                 :assoc-value)
   (:import-from :replic.utils
                 :truthy
@@ -142,7 +141,8 @@
 
 (defun complete-from-list (text list)
   "Select all commands from `list' that start with `text'."
-  (let ((els (remove-if-not (curry #'str:starts-with? text)
+  (let ((els (remove-if-not (lambda (it)
+                              (str:starts-with? text it))
                             list)))
     (if (cdr els)
         (cons (common-prefix els) els)
@@ -165,7 +165,7 @@
 
   line-buffer: as argument for direct call in tests.
   "
-  (declare (ignore end))
+  (declare (ignorable end))
   (if (zerop start)
       (if (str:starts-with? "*" text)
           (complete-from-list text (replic.completion:variables))
