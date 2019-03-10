@@ -139,6 +139,10 @@
 
 (defun complete-from-list (text list)
   "Select all commands from `list' that start with `text'."
+  (unless (stringp (first list))
+    ;; We don't check all the list :/
+    ;; Yet, it is useful for the common case of auto-generated indexes.
+    (error (format nil "The completion candidate '~a' is not of type string. ~%replic's completion functions work with strings." (first list))))
   (let ((els (remove-if-not (lambda (it)
                               (str:starts-with? text it))
                             list)))
