@@ -9,7 +9,6 @@
   :author "vindarel"
   :license "MIT"
   :depends-on (:cl-readline
-               :alexandria
                :str
                :cl-ansi-text
                :unix-opts

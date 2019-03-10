@@ -1,8 +1,6 @@
 (defpackage replic
   (:use :cl)
   (:shadow #:set)
-  (:import-from :alexandria
-                :assoc-value)
   (:import-from :replic.utils
                 :truthy
                 :falsy)
