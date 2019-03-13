@@ -26,7 +26,7 @@
   "Print all the help."
   ;; Preamble.
   (unless (str:blank? *help-preamble*)
-    (format-code *help-preamble*)
+    (replic.utils:format-code *help-preamble*)
     (format t "~%~%"))
 
   ;; Help.
