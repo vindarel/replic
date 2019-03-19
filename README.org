@@ -1,3 +1,5 @@
+[[http://quickdocs.org/replic][file:http://quickdocs.org/badge/replic.svg]]
+
 * Replic
 
 Building a  readline application is  cool, but readline gives  you the
