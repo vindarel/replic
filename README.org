@@ -233,7 +233,7 @@ If  you want  to  have  the base  commands  (=help=, =reload=,  =set=,
 =quit=), import the base package:
 
 #+BEGIN_SRC lisp
-(replic:functions-to-commands :replic.base)
+(replic.completion:functions-to-commands :replic.base)
 #+END_SRC
 
 *** Create commands from a package's exported functions
@@ -241,13 +241,13 @@ If  you want  to  have  the base  commands  (=help=, =reload=,  =set=,
 Create the commands from all the exported functions and variables:
 
 #+BEGIN_SRC lisp
-(replic:functions-to-commands :my-package)
+(replic.completion:functions-to-commands :my-package)
 #+END_SRC
 
 To exclude functions, use the =:exclude= list:
 
 #+BEGIN_SRC lisp
-(replic:functions-to-commands :my-package :exclude '("main"))
+(replic.completion:functions-to-commands :my-package :exclude '("main"))
 #+END_SRC
 
 Create a command from one function:
@@ -281,7 +281,6 @@ overriden in the config file. For example, the =:replic= package exports
   (:export :main
            :confirm
            :repl
-           :functions-to-commands
            :help
            :set
            :reload
