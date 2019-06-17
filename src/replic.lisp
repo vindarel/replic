@@ -136,6 +136,17 @@
                  #'(lambda (i) (or (mismatch (car items) i) (length i)))
                  (cdr items))))))
 
+(defun get-args-strings (text command)
+  "From `text' being the full prompt composed of a `command' and
+arguments, return only the arguments, possibly quoted.
+
+  lyrics \"queens of\" \"lil sis\"
+
+returns a list of two strings."
+  (remove-if #'str:blankp (quoted-strings
+                           (str:substring (length command)
+                                          t
+                                          text))))
 (defun quoted-strings (text)
   "Return the quoted strings from `text' (delimited by a quotation mark \")."
   ;; the prompt
@@ -270,7 +281,7 @@
                              (replic.completion:get-variable verb)))
           ;; Here we do some minimal parsing of the entered text.
           ;; A quoted string must be understood as one argument, not many words.
-          (setf args (rest (quoted-strings text)))
+          (setf args (get-args-strings text verb))
 
 
           (if (and verb function)
