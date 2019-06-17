@@ -136,6 +136,29 @@
                  #'(lambda (i) (or (mismatch (car items) i) (length i)))
                  (cdr items))))))
 
+(defun quoted-strings (text)
+  "Return the quoted strings from `text' (delimited by a quotation mark \")."
+  ;; the prompt
+  ;; > command "hey you" "foo bar"
+  ;; is one command and two arguments, not four (as in the naive first version).
+  (str:split #\" text :omit-nulls t))
+
+#|
+(defun %parse-quoted-strings (text)
+  "Extract bracket-delimited strings from `text'."
+  ;; Parsing version, in case I want to do more convoluted parsing in the future...
+  (let ((res nil)
+        (res-list nil))
+    (loop for char across text
+       if (char= char #\")
+       do (when res
+            (push (coerce (reverse res) 'string)
+                  res-list)
+            (setf res nil))
+       else
+       do (push char res)
+       finally (return (reverse res-list)))))
+|#
 
 (defun complete-from-list (text list)
   "Select all commands from `list' that start with `text'."
@@ -187,7 +210,7 @@
 
 (defun functions-to-commands (package &key exclude)
   (declare (ignore package exclude))
-  (error "deprecated: use replic.completions:functions-to-command."))
+  (error "deprecated: use replic.completion:functions-to-commands."))
 
 (defvar *prompt-exit* "Do you want to quit ?")
 
@@ -245,7 +268,9 @@
                              (replic.completion:get-function verb)))
           (setf variable (if (replic.completion:is-variable verb)
                              (replic.completion:get-variable verb)))
-          (setf args (rest (str:words text)))
+          ;; Here we do some minimal parsing of the entered text.
+          ;; A quoted string must be understood as one argument, not many words.
+          (setf args (rest (quoted-strings text)))
 
 
           (if (and verb function)
