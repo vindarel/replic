@@ -8,6 +8,8 @@
            :confirm
            :repl
            :functions-to-commands
+           :autoprint-results
+           :autoprint-results-from
            :load-init
            :help
            :set
@@ -218,6 +220,23 @@ returns a list of two strings."
    Afterwards, it reads how to complete the function/variable
    arguments from `complete-args`.")
 
+(defparameter *autoprint-functions* nil
+  "List of functions we want to automatically print the result of. No
+  need to create a wrapper specifically for replic that will print
+  their result. Use `autoprint-results-from' :package.")
+
+(defun autoprint-results-from (package &key exclude)
+  "Tell replic to automatically print the result of all the functions
+  of this package (except the ones in the exclude list)."
+  (assert (symbolp package))
+  (do-external-symbols (it package)
+    (unless (replic.completion::to-exclude it exclude)
+      ;; xxx here we don't remember the package, as in replic.completion.
+      (push (string-downcase (string it))
+            *autoprint-functions*))))
+
+(defun autoprint-results (verb)
+  (member verb *autoprint-functions* :test #'string-equal))
 
 (defun functions-to-commands (package &key exclude)
   (declare (ignore package exclude))
@@ -287,7 +306,16 @@ returns a list of two strings."
           (if (and verb function)
               (handler-case
                   ;; Call the function.
-                  (apply function args)
+                  (let ((result (apply function args)))
+                    ;; Usually functions for the lisp repl just return
+                    ;; stuff and don't print it. We want to see the
+                    ;; result, but this is simple enough to be
+                    ;; provided automatically by replic. Use
+                    ;; replic:autoprint-results-from :package. For
+                    ;; full control over the output, just create
+                    ;; another function that wraps it.
+                    (when (autoprint-results verb)
+                      (format t "~a~&" result)))
                 (#+sbcl sb-sys:interactive-interrupt (c)
                         (declare (ignore c))
                         (terpri))
