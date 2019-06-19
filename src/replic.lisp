@@ -281,10 +281,18 @@ returns a list of two strings."
             (setf text
                   (rl:readline :prompt (prompt)
                                :add-history t))
-          (#+sbcl sb-sys:interactive-interrupt ()
-                  (progn
-                    (when (confirm)
-                      (uiop:quit)))))
+
+          ;; This is the only way I found to catch a C-c portably.
+          ;; thanks https://github.com/fukamachi/clack/blob/master/src/clack.lisp
+          ;; trivial-signal didn't work for me (see issue #3)
+          (#+sbcl sb-sys:interactive-interrupt
+            #+ccl  ccl:interrupt-signal-condition
+            #+clisp system::simple-interrupt-condition
+            #+ecl ext:interactive-interrupt
+            #+allegro excl:interrupt-signal
+            () (progn
+                 (when (confirm)
+                   (uiop:quit)))))
 
         (if (string= text "NIL")
             ;; that's a C-d, a blank input is just "".
