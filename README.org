@@ -210,9 +210,11 @@ They are overriden by command line arguments.
 
 : (ql:quickload :replic)
 
+Follow the documentation below, and see example applications on [[https://github.com/vindarel/replic/wiki][the wiki]].
+
 *** Change the prompt
 
-You can change the prompt. It defaults to "> ". It can contain ansi colours.
+You can change the prompt. It defaults to "> ". It can contain ansi colors.
 
 #+BEGIN_SRC lisp
 (setf replic:*prompt* (cl-ansi-text:green "replic > "))
@@ -227,7 +229,7 @@ state of the application (current directory,...):
 
 and concatenate the two with =(replic:prompt)=.
 
-*** Load base commands (help, reload, set)
+*** [optional] Load base commands (help, reload, set)
 
 If  you want  to  have  the base  commands  (=help=, =reload=,  =set=,
 =quit=), import the base package:
@@ -238,7 +240,10 @@ If  you want  to  have  the base  commands  (=help=, =reload=,  =set=,
 
 *** Create commands from a package's exported functions
 
-Create the commands from all the exported functions and variables:
+This is  the core of the  library.
+
+Create  the commands  you'll  find  at the  readline  prompt from  the
+/exported/ functions and variables of a given package:
 
 #+BEGIN_SRC lisp
 (replic.completion:functions-to-commands :my-package)
@@ -250,12 +255,26 @@ To exclude functions, use the =:exclude= list:
 (replic.completion:functions-to-commands :my-package :exclude '("main"))
 #+END_SRC
 
-Create a command from one function:
+For more control, you can create a command from one given function:
 
 #+BEGIN_SRC lisp
 (replic.completion:add-command :function :package)
 ;; add a variable:
 (replic.completion:add-variable :*variable* :package)
+#+END_SRC
+
+It is generally a  good idea to have a package  for the lisp functions
+you'll use at the repl, and another  package for the ones that must be
+commands at the readline interface.
+
+*** [optional] Automatically print the result of functions
+
+A lisp function from a library usually returns some result and doesn't
+necessarily print it. If you  want =replic= to automatically print it,
+ask it like so:
+
+#+BEGIN_SRC lisp
+(replic:autoprint-results-from :my-package :exclude '("exclude" "those-functions"))
 #+END_SRC
 
 *** Load a config file
@@ -400,6 +419,11 @@ the executable. See this [[http://turtleware.eu/posts/cl-charms-crash-course.htm
 need fixing.
 
 
+** Changelog
+- v0.11 (end of june, 2019)
+  - added a declarative way to automatically print a function's result
+  - fixed: a quoted string on the readline prompt is now understood as
+    one single argument.
 ** Resources
 
 
