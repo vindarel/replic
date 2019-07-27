@@ -127,17 +127,6 @@
                  arg)))))
     (format t "~a set to ~a~&" var arg)))
 
-(defun common-prefix (items)
-  ;; tmp waiting for cl-str 0.5 in Quicklisp february.
-  (when items (subseq
-               (car items)
-               0
-               (apply
-                #'min
-                (mapcar
-                 #'(lambda (i) (or (mismatch (car items) i) (length i)))
-                 (cdr items))))))
-
 (defun get-args-strings (text command)
   "From `text' being the full prompt composed of a `command' and
 arguments, return only the arguments, possibly quoted.
@@ -183,7 +172,7 @@ returns a list of two strings."
                               (str:starts-with? text it))
                             list)))
     (if (cdr els)
-        (cons (common-prefix els) els)
+        (cons (str:common-prefix els) els)
         els)))
 
 (defun complete-args (text line)
