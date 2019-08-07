@@ -337,7 +337,9 @@ returns a list of two strings."
           (progn (load file)
                  (setf *init-file* file)))
       (when (probe-file *init-file*)
-        (load *init-file*))))
+        (load *init-file*)
+          ;; re-build the internal list of commands.
+        (replic.completion:functions-to-commands :replic.user))))
 
 (defun reload ()
   "Reload the lisp file loaded at startup."
