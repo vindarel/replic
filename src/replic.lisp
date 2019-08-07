@@ -155,7 +155,7 @@ returns a list of two strings."
                               (str:starts-with? text it))
                             list)))
     (if (cdr els)
-        (cons (str:common-prefix els) els)
+        (cons (str:prefix els) els)
         els)))
 
 (defun complete-args (text line)
