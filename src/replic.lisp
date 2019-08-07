@@ -10,6 +10,7 @@
            :functions-to-commands
            :autoprint-results
            :autoprint-results-from
+           :print-result
            :load-init
            :help
            :set
@@ -199,7 +200,8 @@ returns a list of two strings."
 
 (defun autoprint-results-from (package &key exclude)
   "Tell replic to automatically print the result of all the functions
-  of this package (except the ones in the exclude list)."
+  of this package (except the ones in the exclude list).
+  By default, no command use this."
   (assert (symbolp package))
   (do-external-symbols (it package)
     (unless (replic.completion::to-exclude it exclude)
@@ -207,8 +209,16 @@ returns a list of two strings."
       (push (string-downcase (string it))
             *autoprint-functions*))))
 
-(defun autoprint-results (verb)
+(defun autoprint-results-p (verb)
+  "See also `autoprint-results-from'."
   (member verb *autoprint-functions* :test #'string-equal))
+
+(defun print-result (result)
+  "Print this result. By default, print to standard output.
+
+  This function can be overriden by users in the lisp init file.
+  It will be called when `autoprint-results-p' for a function returns `t'."
+  (format t "~a~&" result))
 
 (defun functions-to-commands (package &key exclude)
   (declare (ignore package exclude))
@@ -225,7 +235,6 @@ returns a list of two strings."
               '("y" "Y" "")
               :test 'equal)
       t))
-
 
 (defun prompt ()
   "Return the prompt to display."
@@ -294,8 +303,8 @@ returns a list of two strings."
                     ;; replic:autoprint-results-from :package. For
                     ;; full control over the output, just create
                     ;; another function that wraps it.
-                    (when (autoprint-results verb)
-                      (format t "~a~&" result)))
+                    (when (autoprint-results-p verb)
+                      (print-result result)))
                 (#+sbcl sb-sys:interactive-interrupt (c)
                         (declare (ignore c))
                         (terpri))

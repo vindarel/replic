@@ -267,7 +267,7 @@ It is generally a  good idea to have a package  for the lisp functions
 you'll use at the repl, and another  package for the ones that must be
 commands at the readline interface.
 
-*** [optional] Automatically print the result of functions
+*** [optional] Automatically printing the result of functions
 
 A lisp function from a library usually returns some result and doesn't
 necessarily print it. If you  want =replic= to automatically print it,
@@ -276,6 +276,27 @@ ask it like so:
 #+BEGIN_SRC lisp
 (replic:autoprint-results-from :my-package :exclude '("exclude" "those-functions"))
 #+END_SRC
+
+*** [optional] Overriding the default printing of results
+
+We export a default =print-result  (result)= function, which is called
+for   functions  whose   results   are   printed  automatically   (see
+=autoprint-results-from= and =autoprint-results-p=).
+
+A user can override this function in his/her lisp init file:
+
+#+BEGIN_SRC lisp
+;; ~/.replic.lisp
+(in-package :replic)
+
+(defun print-result (result)
+  (format t "=== this new result is:~&")
+  (format t "~a~&" result))
+#+END_SRC
+
+In doing so, you should see a warning at startup:
+
+: WARNING: redefining REPLIC:PRINT-RESULT in DEFUN
 
 *** Load a config file
 
