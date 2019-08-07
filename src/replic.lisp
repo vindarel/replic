@@ -145,23 +145,6 @@ returns a list of two strings."
   ;; is one command and two arguments, not four (as in the naive first version).
   (str:split #\" text :omit-nulls t))
 
-#|
-(defun %parse-quoted-strings (text)
-  "Extract bracket-delimited strings from `text'."
-  ;; Parsing version, in case I want to do more convoluted parsing in the future...
-  (let ((res nil)
-        (res-list nil))
-    (loop for char across text
-       if (char= char #\")
-       do (when res
-            (push (coerce (reverse res) 'string)
-                  res-list)
-            (setf res nil))
-       else
-       do (push char res)
-       finally (return (reverse res-list)))))
-|#
-
 (defun complete-from-list (text list)
   "Select all commands from `list' that start with `text'."
   (unless (stringp (first list))
@@ -326,12 +309,10 @@ returns a list of two strings."
 
           (when (and *history*
                      *write-history*)
-            (rl:write-history "/tmp/readline_history"))
-          ))
+            (rl:write-history "/tmp/readline_history"))))
 
     (error (c)
-      (format t "~&Unknown error: ~&~a~&" c)))
-  )
+      (format t "~&Unknown error: ~&~a~&" c))))
 
 (defun format-error (msg)
   "Print this message in red on error output."
