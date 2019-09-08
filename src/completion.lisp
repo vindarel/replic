@@ -30,7 +30,9 @@
    than we can call it!).")
 
 (defparameter *default-command-completion* nil
-  "A variable, list or function to use to complete all commands that don't have an associated completion method.")
+  "A variable, list or function to use to complete all commands that don't have an associated completion method.
+
+Takes no argument and retuns a list of strings.")
 
 (defun commands ()
   "Return the list of available commands."

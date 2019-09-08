@@ -169,18 +169,23 @@ returns a list of two strings."
 (defun custom-complete (text start end &optional (line-buffer rl:*line-buffer*))
   "Complete a symbol.
 
-  `text` is the partially entered word. start and end are the position on `rl:*line-buffer*'.
+  `text' is the partially entered argument. `start' and `end' are the position on the full `line-buffer' (`rl:*line-buffer*').
 
   When the cursor is at the beginning of the prompt, complete from commands.
-  When `text` starts with `*`, complete from variables.
+  When `text' starts with `*', complete from variables.
 
-  line-buffer: as argument for direct call in tests.
+  `line-buffer': optional argument for direct call in tests.
+
+Example:
+  (custom-complete \"w\" 6 t \"hello\")
+could return (\"world\"), given that we defined a completion function.
   "
   (declare (ignorable end))
   (if (zerop start)
       (if (str:starts-with? "*" text)
           (complete-from-list text (replic.completion:variables))
-          (complete-from-list text (replic.completion:commands)))
+          (when (replic.completion:commands)
+            (complete-from-list text (replic.completion:commands))))
       (complete-args text line-buffer)))
 
 (defparameter *custom-complete* #'custom-complete
