@@ -75,7 +75,7 @@ Takes no argument and retuns a list of strings.")
             exclude-list
             :test #'equal)))
 
-(defun add-completion (verb list-or-fn)
+(defun add-completion (verb list-or-fn &rest rest)
   ;; set-completion ?
   "Associate the completion for the given verb. The completion candidates can be:
 
@@ -84,9 +84,17 @@ Takes no argument and retuns a list of strings.")
   b) a function, returning a list of strings.
 
   (if you'd like to give a symbol to be evaluated as a list... just use a function.
+
+;TODO: document how to define different completions for different arguments.
   "
   ;; (push (string-downcase (string it)) *variables*)
-  (push (cons verb list-or-fn) *args-completions*))
+  (let ((completion-list list-or-fn))
+    (setf completion-list (cons completion-list rest))
+    (push (cons verb completion-list) *args-completions*)))
+
+;; Example:
+#+nil
+(add-completion "hello" (lambda () "me") '("you"))
 
 (defun functions-to-commands (package &key exclude)
   "Add exported functions of `package` to the list of commands to complete,
@@ -135,7 +143,6 @@ Takes no argument and retuns a list of strings.")
   (find-symbol (string-upcase name)
                (get-package name)))
 
-
 (defun packages ()
   "Get a list of uniq package symbols used in the application."
   (let (packlist)
@@ -147,22 +154,33 @@ Takes no argument and retuns a list of strings.")
 
 (defun assoc-value (alist key &key (test #'equalp))
   (cdr (assoc key alist :test test)))
-;; (defun get-completions (verb)
 
-(defun candidates (verb)
-  "Return the completion candidates (list of strings) for this verb."
-  (let ((list-or-function (or (assoc-value *args-completions* verb :test #'equal)
-                              *default-command-completion*)))
+(defun funcall-or-itself (list-or-function)
+  (cond
+    ((functionp list-or-function)
+     (funcall list-or-function))
+    (t
+     list-or-function)))
+
+(defun candidates (verb &key (position 0))
+  "Return the completion candidates (list of strings) for this verb.
+
+  `position': the position of the argument in the lambda list (is it the first argument of the function ?). Completion choices can vary given the argument."
+  (let* ((args-completions (assoc-value *args-completions* verb :test #'equal)))
     (cond
-      ((functionp list-or-function)
-       (funcall list-or-function))
-
-      (t
-       list-or-function))))
+      (args-completions
+       (if (>= position (length args-completions))
+           ;; We passed the last argument this function accept.
+           ;; Yet, for any argument length, we could use a default completion function.
+           nil
+           (funcall-or-itself (elt args-completions position))))
+      (*default-command-completion*
+       (funcall *default-command-completion*)))))
 
 ;;
 ;; Development helpers.
 ;;
+#+dev-helper
 (defun reset ()
   "Reset state. Set all lists to nil.
    For use in the REPL.
@@ -171,3 +189,6 @@ Takes no argument and retuns a list of strings.")
   (setf *variables* nil)
   (setf *packages* nil)
   (setf *args-completions* nil))
+
+#+nil
+(reset)
