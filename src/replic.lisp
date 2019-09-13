@@ -159,10 +159,13 @@ returns a list of two strings."
         (cons (str:prefix els) els)
         els)))
 
-(defun complete-args (text line)
+(defun complete-args (text line &key arg-position)
   "Completion for arguments."
-  (let* ((verb (first (str:words line)))
-         (candidates (replic.completion:candidates verb)))
+  (let* ((tokens (str:words line))
+         (verb (first tokens))
+         (candidates (replic.completion:candidates verb
+                                                   :position (max 0
+                                                                  (1- arg-position)))))
     (when candidates
       (complete-from-list text candidates))))
 
@@ -182,11 +185,20 @@ could return (\"world\"), given that we defined a completion function.
   "
   (declare (ignorable end))
   (if (zerop start)
+      ;; complete commands (or variables)
       (if (str:starts-with? "*" text)
           (complete-from-list text (replic.completion:variables))
           (when (replic.completion:commands)
             (complete-from-list text (replic.completion:commands))))
-      (complete-args text line-buffer)))
+      ;; complete arguments to the command.
+      (let* ((tokens (str:words line-buffer))
+             ;; Completion for arguments:
+             ;; when the user input ends with a letter, complete the current argument.
+             ;XXX: see quoted-strings
+             (arg-position (if (str:ends-with? " " line-buffer)
+                               (length tokens)
+                               (1- (length tokens)))))
+        (complete-args text line-buffer :arg-position arg-position))))
 
 (defparameter *custom-complete* #'custom-complete
   "Completion function.
