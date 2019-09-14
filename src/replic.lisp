@@ -146,6 +146,11 @@ returns a list of two strings."
   ;; is one command and two arguments, not four (as in the naive first version).
   (shlex:split text))
 
+(defun cleanup-candidate (candidate)
+  "Remove trailing quotes.
+  Clean only to match input, the candidate should be returned with its quote."
+  (string-trim (list #\") candidate))
+
 (defun complete-from-list (text list)
   "Select all commands from `list' that start with `text'."
   (unless (stringp (first list))
@@ -153,7 +158,10 @@ returns a list of two strings."
     ;; Yet, it is useful for the common case of auto-generated indexes.
     (error (format nil "The completion candidate '~a' is not of type string. ~%replic's completion functions work with strings." (first list))))
   (let ((els (remove-if-not (lambda (it)
-                              (str:starts-with? text it))
+                              (str:starts-with? text
+                                                ;; clean only for matching,
+                                                ;; return the full candidate with its quotes.
+                                                (cleanup-candidate it)))
                             list)))
     (if (cdr els)
         (cons (str:prefix els) els)
@@ -191,10 +199,9 @@ could return (\"world\"), given that we defined a completion function.
           (when (replic.completion:commands)
             (complete-from-list text (replic.completion:commands))))
       ;; complete arguments to the command.
-      (let* ((tokens (str:words line-buffer))
+      (let* ((tokens (quoted-strings line-buffer))
              ;; Completion for arguments:
              ;; when the user input ends with a letter, complete the current argument.
-             ;XXX: see quoted-strings
              (arg-position (if (str:ends-with? " " line-buffer)
                                (length tokens)
                                (1- (length tokens)))))
