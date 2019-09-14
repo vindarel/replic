@@ -432,6 +432,11 @@ Build the executable:
 
 : make build
 
+You can  build the  binary with SBCL  core compression  (see commented
+.asd).  We  passed from  a 78 to  a 18MB binay,  but the  startup time
+increased  from 0.04  to  0.26s,  which is  noticeable.  We don't  use
+compression by default.
+
 *** Develop and test interactively into the console
 
 By starting a swank server in the (real) Lisp repl we can compile code
@@ -439,6 +444,9 @@ in our editor  and try instantly in the  terminal, without re-building
 the executable. See this [[http://turtleware.eu/posts/cl-charms-crash-course.html][cl-charms  crash course]] for now. Some details
 need fixing.
 
+Simpler  and still  handy, you  can add  =trace= statements  into your
+=.replic.lisp=, call the  =reload= command and see  the effects. Then,
+=(untrace)= and reload.
 
 ** Changelog
 - upcoming

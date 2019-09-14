@@ -32,3 +32,9 @@
   ;; #.(read-file-string
      ;; (subpathname *load-pathname* "README.markdown"))
   :in-order-to ((test-op (test-op "replic-test"))))
+
+;; From 78 to 18MB
+;; However, from 0.04 to 0.26 startup time, which is noticeable.
+;; #+sb-core-compression
+;; (defmethod asdf:perform ((o asdf:image-op) (c asdf:system))
+  ;; (uiop:dump-image (asdf:output-file o c) :executable t :compression t))
