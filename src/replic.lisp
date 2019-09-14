@@ -144,7 +144,7 @@ returns a list of two strings."
   ;; the prompt
   ;; > command "hey you" "foo bar"
   ;; is one command and two arguments, not four (as in the naive first version).
-  (str:split #\" text :omit-nulls t))
+  (shlex:split text))
 
 (defun complete-from-list (text list)
   "Select all commands from `list' that start with `text'."

@@ -441,6 +441,10 @@ need fixing.
 
 
 ** Changelog
+- upcoming
+  - fixed 0.11  regression: arguments had  to always be  surrounded by
+    quotes (sept, 14th). We can  now write =command arg1 "second arg"=
+    as expected.
 - v0.11 (end of june, 2019)
   - added a declarative way to automatically print a function's result
   - fixed: a quoted string on the readline prompt is now understood as

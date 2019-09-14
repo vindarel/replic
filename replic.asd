@@ -12,7 +12,8 @@
                :str
                :cl-ansi-text
                :unix-opts
-               :py-configparser)
+               :py-configparser
+               :shlex)
   :components ((:module "src"
                 :components
                 ((:file "utils")
