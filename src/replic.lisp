@@ -292,27 +292,29 @@ could return (\"world\"), given that we defined a completion function.
                              (replic.completion:get-function verb)))
           (setf variable (if (replic.completion:is-variable verb)
                              (replic.completion:get-variable verb)))
-          ;; Here we do some minimal parsing of the entered text.
-          ;; A quoted string must be understood as one argument, not many words.
-          (setf args (parse-args text verb))
-
 
           (if (and verb function)
               (handler-case
-                  ;; Call the function.
-                  (let ((result (apply function args)))
-                    ;; Usually functions for the lisp repl just return
-                    ;; stuff and don't print it. We want to see the
-                    ;; result, but this is simple enough to be
-                    ;; provided automatically by replic. Use
-                    ;; replic:autoprint-results-from :package. For
-                    ;; full control over the output, just create
-                    ;; another function that wraps it.
-                    (when (autoprint-results-p verb)
-                      (print-result result)))
+                  (progn
+                    ;; Parse the entered text.
+                    ;; A quoted string must be understood as one argument, not many words.
+                    (setf args (parse-args text verb))
+                    ;; Call the function.
+                    (let ((result (apply function args)))
+                      ;; Usually functions for the lisp repl just return
+                      ;; stuff and don't print it. We want to see the
+                      ;; result, but this is simple enough to be
+                      ;; provided automatically by replic. Use
+                      ;; replic:autoprint-results-from :package. For
+                      ;; full control over the output, just create
+                      ;; another function that wraps it.
+                      (when (autoprint-results-p verb)
+                        (print-result result))))
                 (#+sbcl sb-sys:interactive-interrupt (c)
                         (declare (ignore c))
                         (terpri))
+                (shlex::shlex-error (c) (format t "~a" c))
+                ;XXX: for an error message without the line and input, see shlex PR.
                 (error (c) (format t "Error: ~a~&" c)))
 
               (if variable
