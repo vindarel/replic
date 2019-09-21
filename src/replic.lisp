@@ -128,7 +128,7 @@
                  arg)))))
     (format t "~a set to ~a~&" var arg)))
 
-(defun get-args-strings (text command)
+(defun parse-args (text command)
   "From `text' being the full prompt composed of a `command' and
 arguments, return only the arguments, possibly quoted.
 
@@ -294,7 +294,7 @@ could return (\"world\"), given that we defined a completion function.
                              (replic.completion:get-variable verb)))
           ;; Here we do some minimal parsing of the entered text.
           ;; A quoted string must be understood as one argument, not many words.
-          (setf args (get-args-strings text verb))
+          (setf args (parse-args text verb))
 
 
           (if (and verb function)
