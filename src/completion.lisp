@@ -83,10 +83,7 @@ Takes no argument and retuns a list of strings.")
 
   b) a function, returning a list of strings.
 
-  (if you'd like to give a symbol to be evaluated as a list... just use a function.
-
-;TODO: document how to define different completions for different arguments.
-  "
+  (if you'd like to give a symbol to be evaluated as a list... just use a function."
   ;; (push (string-downcase (string it)) *variables*)
   (let ((completion-list list-or-fn))
     (setf completion-list (cons completion-list rest))

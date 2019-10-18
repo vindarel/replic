@@ -36,7 +36,7 @@
 
 ;; (defvar *version* (asdf/driver:read-file-form "version.lisp-expr"))
 ;; fails when loaded from another lib.
-(defvar *version* 0.10)
+(defvar *version* 0.12)
 
 (defun version ()
   *version*)

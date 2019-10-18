@@ -113,23 +113,56 @@ See more examples in the =src/examples.lisp= file of this repository.
 
 
 
-*** Define custom completion for arguments
+*** Define a default completion function for a command's arguments
 
-Write a function or a variable and =export= it.
+First write a function or a variable and =export= it. It becomes a command
+in the command line interface.
 
-You can associate a function name with a list of completion candidates (a list
-of strings) or a function:
+You can tell a command to complete its arguments against a given
+variable or function:
 
 #+BEGIN_SRC lisp
 (replic.completion:add-completion "goodbye" (lambda () *names*))
+;; or
+(replic.completion:add-completion "goodbye" #'my-function)
 #+END_SRC
 
-When you have many functions that  should complete from the same list,
+Now everytime you type =goodbye fooTAB=, the lambda function is run and
+you get completion candidates that start with "foo".
+
+The functions must return a list of strings.
+
+When you have many functions whose arguments should be completed similarly,
 you can set a default completion function:
 
 #+BEGIN_SRC lisp
 (setf replic.completion:*default-command-completion* #'my-function)
 #+END_SRC
+
+*** A different completion function for each argument
+
+Each parameter of a command can be completed with its own method.
+
+Let's define a command =say= that wants first a greeting message, and
+then a name:
+
+#+begin_src
+(defun say (verb name)
+  (format t "~a, ~a !~&" verb name))
+#+end_src
+
+We can provide the completion functions in the same order as the arguments:
+
+#+BEGIN_SRC lisp
+(replic.completion:add-completion "say"
+                                  (list "greetings" "\"nice to see you\"")
+                                  (lambda () *names*))
+#+end_src
+
+Now if you type =say TAB= you get the two greeting choices. After you
+pick one and press TAB again, you get the names that were given to
+=hello=.
+
 
 *** Built-in commands
 
@@ -449,7 +482,10 @@ Simpler  and still  handy, you  can add  =trace= statements  into your
 =(untrace)= and reload.
 
 ** Changelog
-- upcoming
+- v0.12, upcoming in Quicklisp of november
+  - added: a different completion for each command argument
+  - added: completion for sentences (strings in quotes).
+- Quicklisp, october 2019
   - fixed 0.11  regression: arguments had  to always be  surrounded by
     quotes (sept, 14th). We can  now write =command arg1 "second arg"=
     as expected.
