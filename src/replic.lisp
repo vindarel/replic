@@ -295,9 +295,8 @@ could return (\"world\"), given that we defined a completion function.
             #+clisp system::simple-interrupt-condition
             #+ecl ext:interactive-interrupt
             #+allegro excl:interrupt-signal
-            () (progn
-                 (when (confirm)
-                   (uiop:quit)))))
+            () (when (confirm)
+                 (uiop:quit))))
 
         (if (string= text "NIL")
             ;; that's a C-d, a blank input is just "".
