@@ -152,7 +152,7 @@ Takes no argument and retuns a list of strings.")
 (defun assoc-value (alist key &key (test #'equalp))
   (cdr (assoc key alist :test test)))
 
-(defun funcall-or-itself (list-or-function)
+(defun call-function-or-return-list (list-or-function)
   (cond
     ((functionp list-or-function)
      (funcall list-or-function))
@@ -170,7 +170,7 @@ Takes no argument and retuns a list of strings.")
            ;; We passed the last argument this function accept.
            ;; Yet, for any argument length, we could use a default completion function.
            nil
-           (funcall-or-itself (elt args-completions position))))
+           (call-function-or-return-list (elt args-completions position))))
       (*default-command-completion*
        (funcall *default-command-completion*)))))
 
