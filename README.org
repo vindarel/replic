@@ -231,10 +231,16 @@ write-history = true
 
 "true", "True" and "t" are truthy and "false", "False" and "nil" are falsy.
 
-It  must  begin with  a  section  name  (=default=) (we  don't  handle
-different profiles yet).
+By default, replic reads and sets the options of the =[default]= section.
 
-They are overriden by command line arguments.
+You can have a section per program:
+
+#+BEGIN_SRC text
+[myprogram]
+option = val
+#+end_src
+
+Options of config files are overriden by command line arguments.
 
 
 ** Developer: using replic as a library with an existing system
@@ -338,13 +344,16 @@ function  =replic.config:apply-config=  takes  as  first  parameter  a
 package name (as a symbol):
 
 #+BEGIN_SRC lisp
-(replic.config:apply-config :replic)
+(replic.config:apply-config :mypackage)
 #+END_SRC
 
-and as an optional second parameter, you can give another file name:
+**Changed in march, 2020** This will read the =[mypackage]= section of
+the configuration files.
+
+As an optional second parameter, you can give another file name:
 
 #+BEGIN_SRC lisp
-(replic.config:apply-config :torrents ".torrents.conf")
+(replic.config:apply-config :mypackage ".mysoftware.conf")
 #+END_SRC
 
 The  exported  variables  from  the  package  can  then  be
@@ -378,7 +387,6 @@ prompt = my silly prompt
 
 and so on.
 
-/Note: for now, we look only at the "default" section./
 
 *** Start the repl
 
@@ -482,6 +490,13 @@ Simpler  and still  handy, you  can add  =trace= statements  into your
 =(untrace)= and reload.
 
 ** Changelog
+- dev
+  - read an option from a given section.
+This:
+: (replic.config:apply-config :myprogram)
+only reads and sets options of the "myprogram" section and set the
+matching variables found in =:myprogram=.
+
 - v0.12, upcoming in Quicklisp of november
   - added: a different completion for each command argument
   - added: completion for sentences (strings in quotes).
