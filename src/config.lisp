@@ -71,6 +71,7 @@
 ;; - search for them without earmuffs in the config file,
 ;; - get the option and set the variable back in the package.
 ;;
+
 (defun get-exported-variables (package)
   (assert (symbolp package))
   (let ((replic.completion::*variables* nil)

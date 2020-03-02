@@ -178,7 +178,7 @@ returns a list of two strings."
       (complete-from-list text candidates))))
 
 (defun custom-complete (text start end &optional (line-buffer rl:*line-buffer*))
-  "Complete a symbol.
+  "Complete a symbol. Return a list of strings for candidates.
 
   `text' is the partially entered argument. `start' and `end' are the position on the full `line-buffer' (`rl:*line-buffer*').
 

@@ -490,7 +490,9 @@ Simpler  and still  handy, you  can add  =trace= statements  into your
     quotes (sept, 14th). We can  now write =command arg1 "second arg"=
     as expected.
 - v0.11 (end of june, 2019)
-  - added a declarative way to automatically print a function's result
+  - added a declarative way to automatically print a function's
+    result. The default function can be overriden by users (in order
+    to, for example, color the output).
   - fixed: a quoted string on the readline prompt is now understood as
     one single argument.
 ** Resources
