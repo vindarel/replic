@@ -53,11 +53,14 @@
             (py-configparser:sections *cfg*))
     t))
 
-(defun has-option-p (option &optional (section "default"))
+(defun has-option-p (option &optional (package/section "default"))
   "Check if the config object has `option` in section
   `package/section` (the section is inferred from the package name)."
   (ignore-errors
-    (py-configparser:has-option-p *cfg* section option)))
+    (py-configparser:has-option-p *cfg*
+                                  ;; :PACKAGE -> "package" section name.
+                                  (str:downcase package/section)
+                                  (no-earmuffs option))))
 
 (defun option (option &key (section *section*))
   "Return this option's value (as string)."
@@ -94,7 +97,8 @@
   "Return this parameter's name, without earmuffs ('*').
    ;; So the config file can suit non-lispers and lispers (who also shall have a lisp configuration file anyway)."
   (if (str:starts-with? "*" var)
-      (string-trim "*" var)))
+      (string-trim "*" var)
+      var))
 
 (defun set-option (var val package)
   "Get the symbol associated to `var` in 'package' and set it."
@@ -105,7 +109,7 @@
   "Interpret the value of this option: t, true or 1 means true, parse integers, etc.
 
    key: an existing variable of the given package, which will be set from the config file."
-  (let ((val (option (no-earmuffs key))))
+  (let ((val (option (no-earmuffs key) :section (str:downcase package))))
     (cond
       ((truthy val)
        (set-option key t package))
@@ -135,6 +139,7 @@
   (declare (ignorable package))
   (read-config cfg-file)
   (mapcar (lambda (var)
-            (when (has-option-p (no-earmuffs var))
+            (when (has-option-p var (str:downcase package))
               (read-option var package)))
-          (get-exported-variables package)))
+          (get-exported-variables package))
+  t)
