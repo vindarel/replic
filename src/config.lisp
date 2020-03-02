@@ -122,14 +122,15 @@
              (when (parse-integer val)
                (set-option key (parse-integer val) package))))))))
 
-(defun print-options (&optional (section "default"))
-  (mapcar (lambda (it)
-            (format t "~a: ~a~&" (car it) (cdr it)))
-          (py-configparser:items *cfg* section)))
+(defun print-options (&optional (section "default" section-p))
+  (loop for section in (if section-p (list section)
+                           (py-configparser:sections *cfg*))
+     do (loop for item in (py-configparser:items *cfg* section)
+           do (format t "~a: ~a~&" (car item) (cdr item)))))
 
 (defun apply-config (package &optional (cfg-file *cfg-file*))
   "Read the config files and for every variable of this package, get its new value.
-   In the config file, variables don't get lispy earmuffs."
+   In the config file, variables don't have lispy earmuffs."
   (declare (ignorable package))
   (read-config cfg-file)
   (mapcar (lambda (var)
