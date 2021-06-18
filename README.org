@@ -28,13 +28,16 @@ What this is *not*:
 
 - this  is  not a  Lisp  REPL.  See [[https://github.com/koji-kojiro/cl-repl][cl-repl]]  for  that  (itself not  a
   replacement for Slime ;) )
-- this is not a shell. See [[https://github.com/bradleyjensen/shcl][shcl]].
+- this is not a shell. See [[https://github.com/bradleyjensen/shcl][shcl]] or [[https://github.com/nibbula/lish][Lish]].
 
 Example applications built on replic:
 
 - [[https://github.com/vindarel/cl-torrents][cl-torrents]]
 - [[https://github.com/vindarel/cl-bookshops][cl-bookshops]]
-
+- here's [[https://github.com/vindarel/lyrics/commit/0a75ae78a172b2aba427d2a5911d8034174c43fd][a commit]] that added replic capabilities to a library. The
+  library was to be used on the Lisp REPL. With the creation of an
+  executable and 5 lines of =replic= setup, we can use it in the
+  terminal, as a readline-based application with nice autocompletion.
 
 ** Installation
 
@@ -44,28 +47,24 @@ executable (=chmod +x replic=) and run it: =./replic=,
 
 or build it yourself.
 
-- the library is on Quicklisp (since the 2019-01-07 dist) and on [[http://ultralisp.org/][Ultralisp]]:
+- the library is on Quicklisp and on [[http://ultralisp.org/][Ultralisp]]:
 
-: (ql:quickload :replic)
+: (ql:quickload "replic")
 
 or clone this repo into =~/quicklisp/local-projects/=,
 
 then build the executable with =make build=.
 
-__Note__: you  need the [[https://github.com/vindarel/cl-readline][cl-readline]]  library from Quicklisp of  end of
-may, 2018 (for the read and write history feature). See =make install=
-for a quick clone.
-
 Run it:
 
-: replic -h
+: ./replic -h
 
-#+BEGIN_EXPORT ascii
+#+BEGIN_SRC text
 Available options:
   -h, --help               Print this help and exit.
   -q, --quiet              Do not load the init file.
   -l, --load ARG           Load the given file.
-#+END_EXPORT
+#+END_SRC
 
 : ./replic
 
@@ -105,6 +104,8 @@ where <name> can be completed from what was given to =hello=.
 
 (export '(hello goodbye))
 #+END_SRC
+
+#+html: <p align="center"><img src="basic-hello-completion.png"/></p>
 
 Note that only the =export='ed  functions and parameters will be taken
 into account.
@@ -146,10 +147,10 @@ Each parameter of a command can be completed with its own method.
 Let's define a command =say= that wants first a greeting message, and
 then a name:
 
-#+begin_src
+#+BEGIN_SRC lisp
 (defun say (verb name)
   (format t "~a, ~a !~&" verb name))
-#+end_src
+#+END_SRC
 
 We can provide the completion functions in the same order as the arguments:
 
@@ -245,9 +246,9 @@ Options of config files are overriden by command line arguments.
 
 ** Developer: using replic as a library with an existing system
 
-=replic= is in Quicklisp (2019-01-07):
+=replic= is in Quicklisp:
 
-: (ql:quickload :replic)
+: (ql:quickload "replic")
 
 Follow the documentation below, and see example applications on [[https://github.com/vindarel/replic/wiki][the wiki]].
 
