@@ -21,7 +21,8 @@
 (defvar *args-completions* nil
   "Alist to associate a verb (str) to its completion candidates.")
 
-(defvar *commands* nil "List of commands.")
+(defvar *commands* nil "List of commands (strings). See `add-command'.
+(in the context of a readline app, they are simply the first word of the line the user types.)")
 
 (defvar *variables* nil "List of variables.")
 
@@ -33,6 +34,30 @@
   "A variable, list or function to use to complete all commands that don't have an associated completion method.
 
 Takes no argument and retuns a list of strings.")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmacro with-rl-completion (list &body body)
+  "Overwrite the completion canditates for the context of BODY.
+
+  Simple wrapper to overwrite the `*commands*' list (a \"command\" app is the first
+word of the line).
+
+  Useful for sub-prompts. For example:
+
+  (with-rl-completion ((list \"History\" \"Litterature\")
+   (rl:readline :prompt \"Choose book shelf: \")
+
+  This allows to autocomplete the shelf name in a sub-prompt, for example a book creation form,
+when the shelves names are normally not in the list of commands of the top-level application"
+  `(let ((*commands* ,list))
+     ,@body))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun commands ()
   "Return the list of available commands."

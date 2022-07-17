@@ -33,7 +33,7 @@ What this is *not*:
 Example applications built on replic:
 
 - [[https://github.com/vindarel/cl-torrents][cl-torrents]]
-- [[https://github.com/vindarel/cl-bookshops][cl-bookshops]]
+- [[https://github.com/OpenBookStore/openbookstore][OpenBookStore]]
 - here's [[https://github.com/vindarel/lyrics/commit/0a75ae78a172b2aba427d2a5911d8034174c43fd][a commit]] that added replic capabilities to a library. The
   library was to be used on the Lisp REPL. With the creation of an
   executable and 5 lines of =replic= setup, we can use it in the
@@ -348,9 +348,6 @@ package name (as a symbol):
 (replic.config:apply-config :mypackage)
 #+END_SRC
 
-**Changed in march, 2020** This will read the =[mypackage]= section of
-the configuration files.
-
 As an optional second parameter, you can give another file name:
 
 #+BEGIN_SRC lisp
@@ -491,13 +488,14 @@ Simpler  and still  handy, you  can add  =trace= statements  into your
 =(untrace)= and reload.
 
 ** Changelog
+
 - dev
   - read an option from a given section.
 This:
 : (replic.config:apply-config :myprogram)
 only reads and sets options of the "myprogram" section and set the
 matching variables found in =:myprogram=.
-
+- July, 2022: added =with-rl-completion=
 - v0.12, upcoming in Quicklisp of november
   - added: a different completion for each command argument
   - added: completion for sentences (strings in quotes).
