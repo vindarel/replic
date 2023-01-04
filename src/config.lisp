@@ -133,13 +133,41 @@
      do (loop for item in (py-configparser:items *cfg* section)
            do (format t "~a: ~a~&" (car item) (cdr item)))))
 
-(defun apply-config (package &optional (cfg-file *cfg-file*))
-  "Read the config files and for every variable of this package, get its new value.
-   In the config file, variables don't have lispy earmuffs."
-  (declare (ignorable package))
+(defun apply-config (&optional (section "default") (package :replic) (cfg-file *cfg-file*))
+  "Read the config files and for every variable of this section, get its new value.
+   Apply the configuration settings for the default package's variables.
+   In the config file, variables don't have lispy earmuffs.
+
+   Example .replic.conf:
+
+   [default]
+   confirm-exit: false
+
+   Then call:
+
+   (replic.config:apply-config)
+
+   by default, this reads the 'default' section and looks for parameters of the REPLIC package.
+
+   You could read another section for your app, for instance:
+
+   [default]
+   confirm-exit: true
+
+   [my-app]
+   confirm-exit: false
+
+   (replic.config:apply-config \"my-app\")
+
+"
+  (declare (ignorable section))
   (read-config cfg-file)
   (mapcar (lambda (var)
-            (when (has-option-p var (str:downcase package))
+            ;; (format t "apply-config: has ~a an option for ~a? ~a~&" (str:downcase section)
+            ;;         var
+            ;;         (has-option-p var section))
+            (when (has-option-p var (str:downcase section))
+              ;; (uiop:format! t "~tapplying option: ~a~&" var (has-option-p var section))
               (read-option var package)))
           (get-exported-variables package))
   t)

@@ -341,21 +341,61 @@ In doing so, you should see a warning at startup:
 *** Load a config file
 
 =replic= searches  by default  for a  =.replic.conf= (see  above). The
-function  =replic.config:apply-config=  takes  as  first  parameter  a
-package name (as a symbol):
+function  =replic.config:apply-config=  takes  as  paramaters:
+
+- (warn: the parameters order was changed on Jan, 2023) an optional
+  section parameter (string), defaults do the "default" section.
+- an optional package name, defaults to =:replic=.
+
+If you do this:
 
 #+BEGIN_SRC lisp
-(replic.config:apply-config :mypackage)
+(replic.config:apply-config)
 #+END_SRC
 
-As an optional second parameter, you can give another file name:
+this will read the settings inside the "default" section, and it will
+apply them to the parameters of the =replic= package. So, you can
+change "confirm-exit" and other built-in parameters (see below).
+
+If you have a config file with another section:
+
+#+BEGIN_SRC text
+[default]
+confirm-exit: true
+
+[my-app]
+confirm-exit: false
+#+end_src
+
+You would read the "my-app" section with:
+
+#+BEGIN_SRC lisp
+(replic.config:apply-config "my-app")
+#+END_SRC
+
+this still tries to set =replic='s default parameters.
+
+: WARN: this is less tested.
+
+If you do:
+
+#+BEGIN_SRC lisp
+(replic.config:apply-config "my-app" :my-app-package)
+#+END_SRC
+
+this will try to set the parameters of your own application.
+
+As an optional third parameter, you can give another file name:
 
 #+BEGIN_SRC lisp
 (replic.config:apply-config :mypackage ".mysoftware.conf")
 #+END_SRC
 
-The  exported  variables  from  the  package  can  then  be
-overriden in the config file. For example, the =:replic= package exports
+*** Default parameters
+
+The exported variables from the package you give as argument can be
+overriden in the config file. For example, the =:replic= package
+exports:
 
 #+BEGIN_SRC text
   (:export :main
@@ -364,7 +404,7 @@ overriden in the config file. For example, the =:replic= package exports
            :help
            :set
            :reload
-           ;; settings
+           ;; settings        ;; <--- exported *parameters* start here.
            :*help-preamble*
            :*help-postamble*
            :*prompt*
@@ -489,12 +529,37 @@ Simpler  and still  handy, you  can add  =trace= statements  into your
 
 ** Changelog
 
-- dev
-  - read an option from a given section.
+dev
+
+- 2023-01: updated reading a section. Fix loading the ini file for
+  another app.
+  To load the ini file, use:
+
+: (replic.config:apply-config)
+
+this will read the "default" section and will check the parameters of
+the =replic= package. Optionally, you can read another section of the
+ini file:
+
+#+BEGIN_SRC text
+[default]
+confirm-exit: true
+
+[my-app]
+confirm-exit: false
+#+end_src
+
+and load it:
+
+: (replic.config:apply-config "my-app")
+
+- read an option from a given section.
+
 This:
 : (replic.config:apply-config :myprogram)
 only reads and sets options of the "myprogram" section and set the
 matching variables found in =:myprogram=.
+
 - July, 2022: added =with-rl-completion=
 - v0.12, upcoming in Quicklisp of november
   - added: a different completion for each command argument
